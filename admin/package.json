@@ -1,0 +1,46 @@
+{
+  "name": "ne-amin",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "dev": "nuxt -c nuxt.config.js",
+    "build1": "nuxt build",
+    "start": "nuxt start",
+    "build": "nuxt generate"
+  },
+  "dependencies": {
+    "@nuxtjs/auth": "^4.9.1",
+    "@nuxtjs/axios": "^5.12.2",
+    "@nuxtjs/dotenv": "^1.4.1",
+    "@nuxtjs/style-resources": "^1.0.0",
+    "@tinymce/tinymce-vue": "^3.2.3",
+    "element-ui": "^2.13.2",
+    "mqtt": "^4.2.6",
+    "nuxt": "^2.14.6",
+    "tinymce": "^5.5.1",
+    "vue-i18n": "^8.21.1",
+    "vuex-persist": "^3.1.0"
+  },
+  "devDependencies": {
+    "@gauseen/nuxt-proxy": "^1.0.1",
+    "@nuxtjs/eslint-module": "^2.0.0",
+    "@nuxtjs/router": "^1.5.0",
+    "babel-eslint": "^10.1.0",
+    "babel-loader": "^8.2.2",
+    "babel-plugin-component": "^1.1.1",
+    "css-loader": "^4.3.0",
+    "eslint": "^7.9.0",
+    "eslint-loader": "^1.9.0",
+    "eslint-plugin-html": "^6.1.0",
+    "fs-extra": "^9.0.1",
+    "happypack": "^5.0.1",
+    "mockjs": "^1.1.0",
+    "node-sass": "^4.14.1",
+    "sass-loader": "^8.0.2",
+    "scss-loader": "^0.0.1",
+    "style-loader": "^2.0.0",
+    "terser-webpack-plugin": "4.2.2",
+    "vue-eslint-parser": "^7.1.0"
+  }
+}

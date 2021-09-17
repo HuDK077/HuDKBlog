@@ -1,0 +1,49 @@
+{
+  "root": true,
+  "parserOptions": {
+    "sourceType": "module",
+    "ecmaVersion": 2021
+  },
+  "parser": "vue-eslint-parser",
+  "rules": {
+    "vue/max-attributes-per-line": "off",
+    "quotes": "off",
+    "space-before-function-paren": "off",
+    "comma-dangle": "off",
+    "prefer-const": "off",
+    "linebreak-style": "off",
+    "vue/singleline-html-element-content-newline": [
+      "off",
+      {
+        "ignoreWhenNoAttributes": "false"
+      }
+    ],
+    "semi": "off",
+    "no-useless-escape": "off",
+    "no-console": "off",
+    "comma-spacing": "off",
+    "eqeqeq": "off",
+    "indent": "off",
+    "no-trailing-spaces": "warn",
+    "key-spacing": "off",
+    "vue/html-indent": "off",
+    "eol-las": "off",
+    "no-unused-vars": "warn",
+    "vue/mustache-interpolation-spacing": "off",
+    "import/no-mutable-exports": "off",
+    "eol-last": "off",
+    "no-multi-spaces": "warn",
+    "no-multiple-empty-lines": "warn",
+    "padded-blocks": "off",
+    "camelcase": "off",
+    "space-before-blocks": "warn",
+    "no-unreachable": "off",
+    "space-infix-ops": "warn",
+    "arrow-parens": "off",
+    "no-proto": "warn",
+    "no-extend-native": "warn",
+    "vue/require-default-prop": "off",
+    "spaced-comment": "warn",
+    "no-unused-expressions": "warn",
+  }
+}
