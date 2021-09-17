@@ -1,0 +1,10 @@
+<?php
+namespace DummyNamespace;
+
+use App\Models\BaseModel;
+
+class DummyClass extends BaseModel
+{
+    protected $guarded = [];
+    //public $timestamps = false;//lumen自动管理created_at和updated_at 默认开启
+}
