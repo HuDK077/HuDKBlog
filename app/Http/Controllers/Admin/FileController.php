@@ -29,7 +29,6 @@ class FileController extends Controller
      */
     public function uploadImage(Request $request)
     {
-        return 11;
         $file = $request->file('file');
         // 判断是否上传成功
         if (!$file->isValid()) {

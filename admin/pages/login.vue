@@ -2,9 +2,6 @@
   <div id="login-main" class="page-main">
     <div class="login">
       <div class="logo">
-        <e-img class="img" :id="siteConfig.logo_sm" src="/image/logo.png">
-          <el-image slot="error" src="/image/logo_sm.png"></el-image>
-        </e-img>
       </div>
       <div class="login_title">
         <span>{{ P_name }}</span>
@@ -134,26 +131,6 @@ export default {
                   localStorage.removeItem("ui");
                 }
                 this.$store.dispatch("auth/setToken", { token });
-                // return this.$apis.getAuthUser()
-                this.$qiniu.getQiniuToken()
-                this.$updateUser((s, r) => {
-                  console.log(s, r);
-                  if (s) {
-                    this.$notify.success({
-                      title: "登录成功",
-                      message: "欢迎回来"
-                    });
-                    setTimeout(() => {
-                      this.$router.push({ name: "home" });
-                      if (this.cloud) {
-                        this.cloud.unLoad();
-                      }
-                    }, 500);
-                  } else {
-                    this.$notify.error(r.data.message);
-                    return Promise.reject(r);
-                  }
-                })
               } else {
                 console.log("登录失败");
                 this.$notify.error(message);
@@ -267,7 +244,7 @@ export default {
 
 <style>
 #login-main {
-  background-image: url("/image/could_bg.png");
+  background-image: url("/image/HuDKBG.jpg");
   background-size: 100% 100%;
   background-repeat: no-repeat;
 }
