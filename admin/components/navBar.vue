@@ -227,11 +227,11 @@ export default {
 
 .el-button {
   font-size: 10px;
-  ::v-deep .zly_weilianjie {
+  /deep/ .zly_weilianjie {
     color: #f56c6c;
   }
 
-  ::v-deep .zly_yilianjie {
+  /deep/ .zly_yilianjie {
     color: #67c23a;
   }
 }

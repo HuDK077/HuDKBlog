@@ -9,7 +9,6 @@ composer install
 php bin/laravels start -d
 ```
 * 热更新
-* 需要到容器内安装
 ```
 apt install inotify-tools
 ```

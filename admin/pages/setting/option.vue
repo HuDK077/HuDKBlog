@@ -173,7 +173,7 @@ export default {
 <style lang="scss" scoped>
 .page-main {
   padding-bottom: 40px;
-  ::v-deep.alert {
+  /deep/.alert {
     margin-bottom: 1em;
   }
 }

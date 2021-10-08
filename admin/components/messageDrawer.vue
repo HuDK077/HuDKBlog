@@ -229,7 +229,7 @@ export default {
     }
   }
   .message-badge {
-    ::v-deep .el-badge__content {
+    /deep/ .el-badge__content {
       top: 12px;
       right: 5px;
     }
@@ -241,7 +241,7 @@ export default {
     }
   }
 
-  .el-tabs ::v-deep .el-tabs__content {
+  .el-tabs /deep/ .el-tabs__content {
     height: 80vh;
     overflow-y: auto;
   }
