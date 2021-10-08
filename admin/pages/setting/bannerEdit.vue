@@ -135,7 +135,7 @@ export default {
     font-size: 20px;
     padding: 10px 80px;
   }
-  /deep/ .file-uploader {
+  ::v-deep .file-uploader {
     &.full {
       .el-upload {
         display: none;
@@ -172,7 +172,7 @@ export default {
     }
   }
   .el-alert {
-    /deep/ .el-alert__content {
+    ::v-deep .el-alert__content {
       line-height: 1;
     }
   }

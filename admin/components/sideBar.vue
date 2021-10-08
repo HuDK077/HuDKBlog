@@ -201,11 +201,11 @@ export default {
 }
 
 .el-submenu.is-opened {
-  /deep/ .el-submenu__title {
+  ::v-deep .el-submenu__title {
     // background-color: #f6f6f6 !important;
     @include background_color("sidebar-active-bg");
   }
-  /deep/ .el-menu-item {
+  ::v-deep .el-menu-item {
     @include background_color("sidebar-active-item-bg");
   }
 }

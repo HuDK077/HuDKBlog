@@ -75,11 +75,11 @@ export default {
 
 <style lang="scss" scoped>
 .form-block {
-  /deep/ .el-form-item__label {
+  ::v-deep .el-form-item__label {
     float: none;
   }
 
-  /deep/ .el-form-item__content {
+  ::v-deep .el-form-item__content {
     margin: 0 !important;
   }
 }

@@ -439,7 +439,7 @@ export default {
   overflow: hidden;
   overflow-y: auto;
   padding-bottom: 20px;
-  /deep/ .el-transfer-panel .el-transfer-panel__body {
+  ::v-deep .el-transfer-panel .el-transfer-panel__body {
     height: 340px;
     .el-input {
       width: calc(100% - 30px);
