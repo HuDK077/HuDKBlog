@@ -11,9 +11,4 @@ use Illuminate\Routing\Controller as BaseController;
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests, Helpers, GuardDog;
-    //public $user;
-    /*public function __construct()
-    {
-        //$this->user = auth('api')->user();
-    }*/
 }
