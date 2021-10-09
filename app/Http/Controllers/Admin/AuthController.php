@@ -6,6 +6,7 @@
  * Time: 14:15
  * ProjectName: sport
  */
+
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
@@ -16,7 +17,8 @@ use App\Models\Admin\RoleUser;
 use Illuminate\Http\Request;
 use Exception;
 
-class AuthController extends Controller{
+class AuthController extends Controller
+{
 
 
     /**
@@ -38,18 +40,19 @@ class AuthController extends Controller{
      * @TIME: 2:47 下午
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function register(Request $request){
-        $this->validate($request,[
+    public function register(Request $request)
+    {
+        $this->validate($request, [
             'username' => 'required|unique:admin_users',
             'password' => 'required'
         ]);
-        $data = ['username' => $request->username,'password' => bcrypt($request->password)];
+        $data = ['username' => $request->username, 'password' => bcrypt($request->password)];
         AdminUser::create($data);
-        $input = $request->only("username","password");
+        $input = $request->only("username", "password");
         $jwt_token = null;
         $jwt_token = auth('admin')->attempt($input);
         if (!$jwt_token) {
-            return response()->json(['success' => false,'message' => 'Invalid Name or Password'],401);
+            return response()->json(['success' => false, 'message' => 'Invalid Name or Password'], 401);
         }
         return response()->json([
             'error_code' => 2001,
@@ -60,7 +63,7 @@ class AuthController extends Controller{
         ]);
     }
 
-   /**
+    /**
      * showdoc
      * @catalog 后台/账号管理
      * @title 用户登录接口_v1.0
@@ -79,18 +82,19 @@ class AuthController extends Controller{
      * @TIME: 10:22 上午
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function login(Request $request){
-        $this->validate($request,[
+    public function login(Request $request)
+    {
+        $this->validate($request, [
             "username" => "required",
             "password" => "required"
         ]);
-        $input = $request->only("username","password");
+        $input = $request->only("username", "password");
         $jwt_token = null;
         $jwt_token = auth('admin')->attempt($input);
         if (!$jwt_token) {
-            return apiResponse(2401,[],'Invalid Name or Password');
+            return apiResponse(2401, [], 'Invalid Name or Password');
         }
-        return  ['error_code' => 2001,'success' => true, 'token' => $jwt_token, 'token_type' => 'bearer', 'expires_in' => auth('admin')->factory()->getTTL() * 60];
+        return ['error_code' => 2001, 'success' => true, 'token' => $jwt_token, 'token_type' => 'bearer', 'expires_in' => auth('admin')->factory()->getTTL() * 60];
     }
 
     /**
@@ -109,10 +113,11 @@ class AuthController extends Controller{
      * @DATE: 2020/9/24
      * @TIME: 10:26 上午
      */
-    public function loginOut(){
+    public function loginOut()
+    {
         $res = auth('admin')->logout(true);
-        if (!$res){
-            return response()->json(['error_code' => 2001,'message' => 'success']);
+        if (!$res) {
+            return response()->json(['error_code' => 2001, 'message' => 'success']);
         }
     }
 
@@ -138,15 +143,16 @@ class AuthController extends Controller{
     {
         $start = microtime(true);
         $member = auth('admin')->user();
-        $role = RoleUser::where('user_id',$member->id)->first();
-        if ($role->role_id == 1){   #如果是超级管理就返回所有页面权限
-            $menus = Menu::orderBy('sort','desc')->pluck('slug');
-        }else{
-            $r_m = RoleMenu::where('role_id',$role->role_id)->pluck('menu_id'); #菜单ID组
-            $menus = Menu::whereIn('id',$r_m)->orderBy('sort','desc')->pluck('slug');
+        $member->avatar_src = env('QINIU_DOMAIN_FULL') . $member->avatar;
+        $role = RoleUser::where('user_id', $member->id)->first();
+        if ($role->role_id == 1) {   #如果是超级管理就返回所有页面权限
+            $menus = Menu::orderBy('sort', 'desc')->pluck('slug');
+        } else {
+            $r_m = RoleMenu::where('role_id', $role->role_id)->pluck('menu_id'); #菜单ID组
+            $menus = Menu::whereIn('id', $r_m)->orderBy('sort', 'desc')->pluck('slug');
         }
         $end = microtime(true);
-        return response()->json(['error_code' => 2001,'message' => 'success','data' => ['member' => $member,'menus' => $menus,'role' => $role,'runtime' => $end-$start]]);
+        return response()->json(['error_code' => 2001, 'message' => 'success', 'data' => ['member' => $member, 'menus' => $menus, 'role' => $role, 'runtime' => $end - $start]]);
     }
 
 
@@ -168,15 +174,16 @@ class AuthController extends Controller{
      * @TIME: 4:04 下午
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function resetPaw(Request $request){
-        $this->validate($request,['password' => 'required']);
+    public function resetPaw(Request $request)
+    {
+        $this->validate($request, ['password' => 'required']);
         $member = auth('admin')->user();
         $data = ['password' => bcrypt($request->password)];
-        try{
-            AdminUser::where('id',$member->id)->update($data);
+        try {
+            AdminUser::where('id', $member->id)->update($data);
             return apiResponse(2001);
-        }catch (Exception $exception){
-            return apiResponse(2005,[],$exception->getMessage());
+        } catch (Exception $exception) {
+            return apiResponse(2005, [], $exception->getMessage());
         }
     }
 
@@ -197,7 +204,8 @@ class AuthController extends Controller{
      * @DATE: 2020/9/25
      * @TIME: 4:04 下午
      */
-    public function authentication(){
+    public function authentication()
+    {
         $token = auth('admin')->getToken();
         if (!$token) {
             return apiResponse(2005);

@@ -49,6 +49,7 @@ class UserController extends Controller
                 'admin_users.username',
                 'admin_users.name',
                 'admin_users.avatar',
+                DB::raw("CONCAT('" . env('QINIU_DOMAIN_FULL') . "',avatar) as avatar_src"),
                 'admin_users.created_at',
                 'admin_role_users.role_id',
                 'admin_roles.name as role_name',

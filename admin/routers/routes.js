@@ -15,9 +15,9 @@ const setting_menu = () => interopDefault(import('@/pages/setting/menu.vue'));
 const setting_permission = () => interopDefault(import('@/pages/setting/permission.vue'));
 const setting_user_edit = () => interopDefault(import('@/pages/setting/userEdit.vue'));
 // 会员管理
-const member_list = () => interopDefault(import('@/pages/manage/member.vue'));
-// 平台协议
-const agreement_edit = () => interopDefault(import('@/pages/setting/agreement.vue'));
+const member = () => interopDefault(import('@/pages/manage/member.vue'));
+//轮播
+const banner = () => interopDefault(import('@/pages/banner/list.vue'));  //轮播列表
 
 export const routes = [
     {
@@ -40,60 +40,61 @@ export const routes = [
     },
     {
         path: "/member",
-        component: member_list,
+        component: member,
         name: "member",
-        meta: {icon: "app_icon-test37", title: "会员管理"},
+        meta: {icon: "zly_icon-test37", title: "会员管理"},
     },
     {
         path: "/setting",
         component: index,
         name: "setting",
         redirect: '/setting/user',
-        meta: {icon: "app_setting", title: "系统设置"},
+        meta: {icon: "zly_setting", title: "系统设置"},
         children: [
             {
                 path: "/setting/user",
                 component: setting_user,
                 name: "setting.user",
-                meta: {icon: "app_setting", title: "用户管理"}
+                meta: {icon: "zly_setting", title: "用户管理"}
             },
             {
                 path: "/setting/role",
                 component: setting_role,
                 name: "setting.role",
-                meta: {icon: "app_setting", title: "角色管理"}
+                meta: {icon: "zly_setting", title: "角色管理"}
             },
 
             {
                 path: "/setting/permission",
                 component: setting_permission,
                 name: "setting.permission",
-                meta: {icon: "app_setting", title: "权限管理"}
+                meta: {icon: "zly_setting", title: "权限管理"}
             },
             {
                 path: "/setting/option",
                 component: setting_option,
                 name: "setting.option",
-                meta: {icon: "app_setting", title: "环境设置"}
+                meta: {icon: "zly_setting", title: "环境设置"}
             },
             {
                 path: "/setting/menu",
                 component: setting_menu,
                 name: "setting.menu",
-                meta: {icon: "app_setting", title: "页面管理"}
-            },
-            {
-                path: "/setting/agreement",
-                component: agreement_edit,
-                name: "agreement.edit",
-                meta: {icon: "app_setting", title: "平台协议"}
+                meta: {icon: "zly_setting", title: "页面管理"}
             },
             {
                 path: "/setting/user/:id",
                 component: setting_user_edit,
                 name: "setting.user:id",
-                meta: {icon: "app_setting", title: "用户编辑", hidden: true}
+                meta: {icon: "zly_setting", title: "用户编辑", hidden: true}
             },
         ]
+    },
+    // 轮播
+    {
+        path: "/banner",
+        name: "banner",
+        component: banner,
+        meta: {icon: "zly_setting", title: "轮播管理"},
     },
 ];

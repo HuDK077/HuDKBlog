@@ -2,6 +2,9 @@
   <div id="login-main" class="page-main">
     <div class="login">
       <div class="logo">
+        <e-img class="img" :id="siteConfig.logo_sm" src="/image/logo.png">
+          <el-image slot="error" src="/image/logo_sm.png"></el-image>
+        </e-img>
       </div>
       <div class="login_title">
         <span>{{ P_name }}</span>
@@ -13,7 +16,7 @@
               class="login-input"
               v-model="form.username"
               placeholder="用户名"
-              prefix-icon="app_icon-test35"
+              prefix-icon="zly_icon-test35"
               @keyup.enter.native="submit"
             ></el-input>
           </el-form-item>
@@ -24,7 +27,7 @@
               v-model="form.password"
               placeholder="密码"
               :show-password="showPwd"
-              prefix-icon="app_icon-test26"
+              prefix-icon="zly_icon-test26"
               @keyup.enter.native="submit"
             ></el-input>
           </el-form-item>
@@ -130,7 +133,27 @@ export default {
                 } else {
                   localStorage.removeItem("ui");
                 }
+                this.$qiniu.getQiniuToken()
                 this.$store.dispatch("auth/setToken", { token });
+                // return this.$apis.getAuthUser()
+                this.$updateUser((s, r) => {
+                  console.log(s, r);
+                  if (s) {
+                    this.$notify.success({
+                      title: "登录成功",
+                      message: "欢迎回来"
+                    });
+                    setTimeout(() => {
+                      this.$router.push({ name: "home" });
+                      if (this.cloud) {
+                        this.cloud.unLoad();
+                      }
+                    }, 500);
+                  } else {
+                    this.$notify.error(r.data.message);
+                    return Promise.reject(r);
+                  }
+                })
               } else {
                 console.log("登录失败");
                 this.$notify.error(message);
@@ -244,7 +267,7 @@ export default {
 
 <style>
 #login-main {
-  background-image: url("/image/HuDKBG.jpg");
+  background-image: url("/image/could_bg.png");
   background-size: 100% 100%;
   background-repeat: no-repeat;
 }

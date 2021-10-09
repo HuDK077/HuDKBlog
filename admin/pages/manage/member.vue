@@ -20,6 +20,8 @@
         <template slot-scope="{row}">{{row.gender == 0 ? "未知" : row.gender == 1 ? "男" : "女"}}</template>
       </el-table-column>
       <el-table-column prop="phone" label="手机号" width="120"></el-table-column>
+      <el-table-column prop="integral" label="积分"></el-table-column>
+      <el-table-column prop="water_ticket" label="水票"></el-table-column>
       <el-table-column prop="type" label="会员类型">
         <template slot-scope="{row}">{{getType(row.type)}}</template>
       </el-table-column>
@@ -33,10 +35,24 @@
     </el-table>
 
     <div class="pagination">
-      <el-pagination @size-change="loadData" @current-change="loadData" :current-page.sync="page" :page-sizes="[10, 20, 50, 100]" :page-size.sync="limit" layout="total, sizes, prev, pager, next, jumper" :total="total"></el-pagination>
+      <el-pagination
+        @size-change="loadData"
+        @current-change="loadData"
+        :current-page.sync="page"
+        :page-sizes="[10, 20, 50, 100]"
+        :page-size.sync="limit"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total"
+      ></el-pagination>
     </div>
 
-    <el-dialog width="50%" title="修改会员信息" :visible.sync="showEditDialog" :close-on-click-modal="false" @closed="editDialogClosed">
+    <el-dialog
+      width="50%"
+      title="修改会员信息"
+      :visible.sync="showEditDialog"
+      :close-on-click-modal="false"
+      @closed="editDialogClosed"
+    >
       <div>
         <el-form :model="form" :rules="rules" ref="form" label-width="10em" label-position="top">
           <el-form-item label="真实姓名" prop="real_name">
@@ -51,10 +67,6 @@
                 <el-option :key="index" :label="item.name" :value="item.id"></el-option>
               </template>
             </el-select>
-          </el-form-item>
-          <el-form-item label="核销权限" prop="is_verification" v-if="form.type != 1">
-            <el-switch v-model="form.is_verification" active-text="是" :inactive-value="0" :active-value="1">
-            </el-switch>
           </el-form-item>
         </el-form>
       </div>
@@ -76,11 +88,11 @@ export default {
       },
       {
         id: 2,
-        name: "员工"
+        name: "销售员"
       },
       {
         id: 3,
-        name: "管理员"
+        name: "送水员"
       },
     ];
 
@@ -108,7 +120,6 @@ export default {
         real_name: "",
         phone: "",
         type: "",
-        is_verification: 0,
       },
       rules: {
         real_name: [
@@ -116,9 +127,6 @@ export default {
         ],
         type: [
           { required: true, message: '请选择会员类型', trigger: 'blur' }
-        ],
-        is_verification: [
-          { required: true, message: '', trigger: 'blur', type: "number" }
         ],
         phone: [
           { required: true, message: '请输入手机号', trigger: 'blur' },
@@ -153,8 +161,8 @@ export default {
     // 编辑用户
     editRow(e) {
       console.log(e);
-      let { real_name, phone, type, is_verification, id } = e;
-      let obj = { real_name, phone, type, is_verification, id };
+      let { real_name, phone, type, id } = e;
+      let obj = { real_name, phone, type, id };
       Object.keys(obj).forEach(k => {
         this.form[k] = obj[k];
       })
@@ -165,8 +173,8 @@ export default {
       this.$refs["form"].validate(vaild => {
         if (vaild) {
           this.onEdit = true;
-          let { real_name, phone, type, is_verification, id } = this.form;
-          this.$apis.updateMember({ real_name, phone, type, is_verification, id })
+          let { real_name, phone, type, id } = this.form;
+          this.$apis.updateMember({ real_name, phone, type, id })
             .then(res => {
               console.log(res.data)
               let { error_code, message } = res.data;
@@ -187,7 +195,7 @@ export default {
     // dialog 关闭
     editDialogClosed() {
       this.$refs["form"].resetFields();
-      this.form = { real_name: "", phone: "", type: "", is_verification: 0 };
+      this.form = { real_name: "", phone: "", type: "" };
     },
     // 获取用户类型
     getType(t) {

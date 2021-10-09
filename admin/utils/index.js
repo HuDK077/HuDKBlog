@@ -186,7 +186,7 @@ export function randomString(e) {
   var t = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890",
     a = t.length,
     n = "";
-  for (i = 0; i < e; i++) n += t.charAt(Math.floor(Math.random() * a));
+  for (let i = 0; i < e; i++) n += t.charAt(Math.floor(Math.random() * a));
   return n
 }
 

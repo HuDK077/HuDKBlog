@@ -91,7 +91,6 @@ class FileController extends Controller
         }
     }
 
-
     /**
      * showdoc
      * @catalog 后台/文件管理
@@ -304,22 +303,18 @@ class FileController extends Controller
             return apiResponse(2006);
         }
         $file_disk = $request->type ?: $file->disk;
-        //$file_disk = $file->disk;
         switch ($file_disk) {
             case 'local'://存在本地storage
                 $temp_path = storage_path() . $file->file_path;
                 $pictureData = fread(fopen($temp_path, "r"), $file->size);
                 return response($pictureData, 200)->header('Content-Type', $file->mime_type);
-                break;
             case "qiniu":
                 $res['file_id'] = $file->file_path;//cdn使用file_path
                 $res['img'] = env('QINIU_DOMAIN_FULL') . $file->file_path;
                 return apiResponse(2001, $res);
-                break;
             default:
                 $data = ['file' => $file->file_path];
                 return apiResponse(2001, $data);
-                break;
         }
     }
 
@@ -378,5 +373,6 @@ class FileController extends Controller
         }
         return apiResponse(2001, $res);
     }
+
 }
 

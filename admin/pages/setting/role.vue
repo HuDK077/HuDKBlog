@@ -5,7 +5,7 @@
     </div>
 
     <el-table :data="roles" stripe style="width: 100%">
-      <el-table-column prop="id" label="ID" width="80"></el-table-column>
+      <el-table-column prop="id" label="编号" width="80"></el-table-column>
       <el-table-column prop="slug" label="标识"></el-table-column>
       <el-table-column prop="name" label="角色名称"></el-table-column>
       <el-table-column prop="created_at" label="创建日期"></el-table-column>
@@ -20,7 +20,13 @@
       </el-table-column>
     </el-table>
 
-    <el-dialog width="50%" :title="updateMode? '更新角色' : '新增角色' " :visible.sync="showEditDialog" :close-on-click-modal="false" @closed="editDialogClosed">
+    <el-dialog
+      width="50%"
+      :title="updateMode? '更新角色' : '新增角色' "
+      :visible.sync="showEditDialog"
+      :close-on-click-modal="false"
+      @closed="editDialogClosed"
+    >
       <div>
         <el-form :model="form" :rules="rules" ref="form" label-width="10em" label-position="top">
           <el-form-item label="标识" prop="slug">
@@ -37,18 +43,44 @@
       </span>
     </el-dialog>
 
-    <el-dialog width="50%" title="更新角色页面权限" :visible.sync="showRoleMenu" :close-on-click-modal="false" @closed="roleMenuDialogClosed">
+    <el-dialog
+      width="50%"
+      title="更新角色页面权限"
+      :visible.sync="showRoleMenu"
+      :close-on-click-modal="false"
+      @closed="roleMenuDialogClosed"
+    >
       <div class="menu-tree-box">
-        <el-tree ref="menuTree" :data="menus" show-checkbox node-key="id" :props="defaultProps" :default-expand-all="true" :default-checked-keys="roleMenu"></el-tree>
+        <el-tree
+          ref="menuTree"
+          :data="menus"
+          show-checkbox
+          node-key="id"
+          :props="defaultProps"
+          :default-expand-all="true"
+          :default-checked-keys="roleMenu"
+        ></el-tree>
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="roleMenuCancel">取 消</el-button>
         <el-button type="primary" @click="submitRoleMenu">确 定</el-button>
       </span>
     </el-dialog>
-    <el-dialog width="900px" title="更新角色接口权限" :visible.sync="showRolePermission" :close-on-click-modal="false" @closed="rolePermissionDialogClosed" destroy-on-close>
+    <el-dialog
+      width="900px"
+      title="更新角色接口权限"
+      :visible.sync="showRolePermission"
+      :close-on-click-modal="false"
+      @closed="rolePermissionDialogClosed"
+    >
       <div class="permission-box">
-        <el-transfer :titles="['未获得的权限', '已获得的权限']" :button-texts="['收回', '分配']" :props="perProps" v-model="rolePermission" :data="permissions" filterable :filter-method="filterMethod">
+        <el-transfer
+          :titles="['未获得的权限', '已获得的权限']"
+          :button-texts="['收回权限', '分配权限']"
+          :props="perProps"
+          v-model="rolePermission"
+          :data="permissions"
+        >
           <template slot-scope="{option}">
             <span>{{option.name +"( "+option.slug+" )"}}</span>
           </template>
@@ -401,10 +433,7 @@ export default {
           }
         });
     },
-    // 筛选
-    filterMethod(query, item) {
-      return item.name.indexOf(query) > -1 || item.slug.indexOf(query) > -1;
-    }
+
   },
 }
 </script>
@@ -435,19 +464,10 @@ export default {
 .permission-box {
   display: flex;
   justify-content: center;
-  max-height: 60vh;
+  max-height: 50vh;
   overflow: hidden;
   overflow-y: auto;
   padding-bottom: 20px;
-  /deep/ .el-transfer-panel .el-transfer-panel__body {
-    height: 340px;
-    .el-input {
-      width: calc(100% - 30px);
-    }
-    .el-transfer-panel__list.is-filterable {
-      height: 280px;
-    }
-  }
 }
 </style>
 

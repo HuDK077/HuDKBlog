@@ -4,24 +4,41 @@
       <el-button type="primary" icon="el-icon-plus" @click="addNewMenu">新增主菜单</el-button>
     </div>
 
-    <el-tree draggable ref="tree" :data="menus" node-key="id" :props="treeProps" :allow-drop="allowDrop" :allow-drag="allowDrog" @node-drop="dropDone" :expand-on-click-node="true">
+    <el-tree
+      draggable
+      ref="tree"
+      :data="menus"
+      node-key="id"
+      :props="treeProps"
+      :allow-drop="allowDrop"
+      :allow-drag="allowDrog"
+      @node-drop="dropDone"
+      :expand-on-click-node="true"
+    >
       <span class="custom-tree-node" slot-scope="{ node, data }">
         <span :class="[data.parent_id == 0 ? 'parent' : '',data.id == -1 ? 'need-edit' : '']">{{ data.title }}</span>
         <span style="padding-left: 10px">
-          <el-button v-if="data.parent_id == 0 && data.id != -1" type="text" @click.stop="append(data)">
+          <el-button v-if="data.parent_id == 0 && data.id != -1" type="text" @click="() => append(data)">
             <i class="el-icon-plus"></i>
           </el-button>
-          <el-button type="text" @click.stop="edit(node, data)">
+          <el-button type="text" @click="() => edit(node, data)">
             <i class="el-icon-edit"></i>
           </el-button>
-          <el-button type="text" @click.stop="remove(node, data)">
+          <el-button type="text" @click="() => remove(node, data)">
             <i class="el-icon-delete"></i>
           </el-button>
         </span>
       </span>
     </el-tree>
 
-    <el-dialog title="编辑页面" @closed="handleClose" :visible.sync="showEditDialog" center width="50%" :close-on-click-modal="false">
+    <el-dialog
+      title="编辑页面"
+      @closed="handleClose"
+      :visible.sync="showEditDialog"
+      center
+      width="50%"
+      :close-on-click-modal="false"
+    >
       <div>
         <el-form ref="form" :model="form" :rules="rules" label-width="7em" label-position="top">
           <el-form-item label="页面名称" prop="title">
