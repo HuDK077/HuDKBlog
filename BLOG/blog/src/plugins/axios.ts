@@ -7,6 +7,7 @@ declare module "@vue/runtime-core" {
         $axios?: AxiosInstance;
     }
 }
+
 export const axiosPlugin = {
     install(app: App): void {
         app.config.globalProperties.$axios = http;

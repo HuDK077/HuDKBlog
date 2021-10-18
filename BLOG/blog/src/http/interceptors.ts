@@ -1,4 +1,5 @@
-import axios, { AxiosInstance } from "axios";
+// 首先引入axios和上一步封装的cookie方法
+import axios, {AxiosInstance} from "axios";
 import {
     setToken,
     setRefreshToken,
@@ -11,12 +12,23 @@ import {
 
 export class Interceptors {
     instance: AxiosInstance;
+
     constructor() {
+        // const baseUrl = process.env.API_TEST_URL;
+        // if (process.env.NODE_ENV === "production") {
+        //     baseUrl = process.env.API_PRODUCTION_URL
+        // } else if (process.env.NODE_ENV === "development") {
+        //     baseUrl = process.env.API_DEVELOPMENT_URL
+        // } else if (process.env.NODE_ENV === "test") {
+        //     baseUrl = process.env.API_TEST_URL
+        // }
+        console.log(process.env)
         this.instance = axios.create({
             baseURL: "/api",
             timeout: 10000,
         });
     }
+
     // 初始化拦截器
     init() {
         // 请求接口拦截器
@@ -80,11 +92,12 @@ export class Interceptors {
                 } else {
                     console.error(error.message);
                 }
-                const err = { errCode: -110, errMsg: error.message || "Error" };
+                const err = {errCode: -110, errMsg: error.message || "Error"};
                 return Promise.resolve(err);
             }
         );
     }
+
     // 返回一下
     getInterceptors() {
         return this.instance;
