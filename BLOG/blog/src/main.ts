@@ -4,11 +4,11 @@ import 'element-plus/dist/index.css';
 import App from './App.vue';
 import router from './router';
 import store from './store';
-import { axiosPlugin } from './plugins/axios';
 
 const app = createApp(App);
+store.forEach(({ modelName, key }) => {
+    app.use(modelName, key);
+});
 app.use(ElementPlus)
     .use(router)
-    .use(store)
-    .use(axiosPlugin)
     .mount('#app');

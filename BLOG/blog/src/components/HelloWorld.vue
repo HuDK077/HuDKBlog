@@ -1,35 +1,33 @@
 <template>
-    <div class="hello">
-        <h1>点击{{ state.count }}</h1>
-        <el-button @click="increment()">点一下</el-button>
+    <div>
     </div>
 </template>
-
 <script setup lang="ts">
-import { getCurrentInstance } from "vue"
-const axios = getCurrentInstance()?.appContext.config.globalProperties.$axios
-axios.request({
-    url: '/user/login',
-    method: 'post'
-})
+import {apis} from '@/plugins/apis'
+import user from "@/store/modules/user";
+// import { io } from "socket.io-client";
+// const socket = io("ws://blog.cc:5500");
+// console.log(socket)
+// socket.on("connection", (socket) => {
+//     console.log(socket.id);
+// });
+//
+// socket.on("disconnect", () => {
+//     console.log(socket.id); // undefined
+// });
+// console.log(socket)
+
+
+// let data: object = {} = {
+//     openid: 'HuDK'
+// }
+// apis('login', data).then(res => {
+//     console.log(res)
+// });
+// user.dispatch('change', "asdasd")import { io } from "socket.io-client";
+
 </script>
 
+
 <style scoped lang="scss">
-h3 {
-    margin: 40px 0 0;
-}
-
-ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-li {
-    display: inline-block;
-    margin: 0 10px;
-}
-
-a {
-    color: #42b983;
-}
 </style>

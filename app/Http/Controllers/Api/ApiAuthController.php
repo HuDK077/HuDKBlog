@@ -39,11 +39,11 @@ class ApiAuthController extends Controller{
         #region 使用用户模型进行认证
         $openid = $request->openid;
         if (!$openid){
-            return response()->json(['success' => false,'message' => 'Invalid User'],401);
+            return response()->json(['success' => false,'message' => 'Invalid User111'],401);
         }
         $member = Member::where('openid',$openid)->first();
         if (!$member){
-            return response()->json(['success' => false,'message' => 'Invalid User'],401);
+            return response()->json(['success' => false,'message' => 'Invalid User222'],401);
         }
         $jwt_token = auth('api')->fromUser($member);
         #endregion
