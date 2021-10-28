@@ -73,6 +73,10 @@ a {
     border: 1px solid #409eff;
     color: #fff;
     background-color: #409eff;
+    &.el-button--success {
+      background-color: #67c23a;
+      border-color: #67c23a;
+    }
   }
 }
 
@@ -81,6 +85,19 @@ a {
   .el-image-viewer__prev {
     background-color: #333333 !important;
   }
+}
+
+.el-card__body {
+  height: 100%;
+  padding: 4px 8px !important;
+}
+
+.el-aside {
+  padding: 4px;
+}
+
+.el-main {
+  padding: 4px;
 }
 
 ::-webkit-scrollbar {

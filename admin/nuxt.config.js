@@ -7,7 +7,7 @@ const happyThreadPool = HappyPack.ThreadPool({ size: os.cpus().length });
 
 export default {
   ssr: false,
-  dev: process.env.NODE_ENV == 'dev',
+  dev: process.env.NODE_ENV !== 'production',
   /*
    * Headers of the page
    */
@@ -43,8 +43,8 @@ export default {
     '@/plugins/axios',
     '@/plugins/onError',
     // '@/plugins/mqtt',
-    '@/plugins/element',
     '@/plugins/common',
+    '@/plugins/element',
     '@/plugins/qiniu',
     // '@/plugins/i18n',
   ],
@@ -54,12 +54,10 @@ export default {
   modules: [
     '@nuxtjs/axios',
     '@nuxtjs/style-resources',
-    ['@nuxtjs/dotenv',
-      {
-        path: process.env.NODE_ENV == 'development' ? "./" : "../",
-        only: process.env.NODE_ENV == 'development' ? "" : ["APP_URL", "NODE_ENV", "APP_LOCALE", "APP_NAME", "TINY_KEY", "DESCRIPTION", "MQTT_SERVER", "MQTT_CLIENTID", "MQTT_USERNAME", "MQTT_PASSWORD"]
-      }
-    ]
+    ['@nuxtjs/dotenv', {
+      path: process.env.NODE_ENV == 'development' ? "./" : "../",
+      only: process.env.NODE_ENV == 'development' ? "" : ["APP_URL", "NODE_ENV", "APP_LOCALE", "APP_NAME", "TINY_KEY", "DESCRIPTION", "MQTT_SERVER", "MQTT_CLIENTID", "MQTT_USERNAME", "MQTT_PASSWORD"]
+    }]
   ],
   // 编译配置 使用自定义路由
   buildModules: [

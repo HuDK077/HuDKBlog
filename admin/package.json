@@ -15,7 +15,7 @@
     "@nuxtjs/dotenv": "^1.4.1",
     "@nuxtjs/style-resources": "^1.0.0",
     "@tinymce/tinymce-vue": "^3.2.3",
-    "element-ui": "^2.13.2",
+    "element-ui": "^2.15.6",
     "mqtt": "^4.2.6",
     "nuxt": "^2.14.6",
     "tinymce": "^5.5.1",

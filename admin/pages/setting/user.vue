@@ -1,60 +1,92 @@
 <template>
   <div>
     <div class="top-bar">
-      <el-input placeholder="搜索用户登录名/真实姓名" v-model="search" class="input-with-select" @keyup.enter.native="loadData">
-        <el-button slot="append" type="primary" icon="el-icon-search" @click="loadData">搜索</el-button>
+      <el-input
+        placeholder="搜索用户登录名/真实姓名"
+        v-model="search"
+        class="input-with-select"
+        @keyup.enter.native="loadData"
+        :disabled="!canGetUser"
+      >
+        <e-btn slot="append" tag="setting.user@get" type="primary" icon="el-icon-search" @click="loadData">搜索</e-btn>
       </el-input>
-      <el-button type="primary" icon="el-icon-plus" @click="addNewUser">新增管理员(用户)</el-button>
+      <e-btn tag="setting.user@add" type="primary" icon="el-icon-plus" @click="addNewUser">新增用户</e-btn>
     </div>
-    <el-table v-loading="loading" :data="users" stripe style="width: 100%">
+    <el-table v-loading="loading" :data="list" stripe style="width: 100%">
       <el-table-column prop="id" label="编号" width="50"></el-table-column>
       <el-table-column prop="username" label="登录名"></el-table-column>
-      <el-table-column prop="name" label="真实姓名"></el-table-column>
-      <el-table-column prop="role" label="角色">
-        <template slot-scope="scope">{{scope.row.role_name + " ( "+scope.row.slug+" )"}}</template>
-      </el-table-column>
+      <el-table-column prop="name" label="用户名"></el-table-column>
       <el-table-column fixed="right" label="操作" width="200">
         <template slot-scope="scope">
-          <el-button @click="editUser(scope.row)" type="text" size="small">编辑</el-button>
+          <e-btn tag="setting.user@update" @click="editUser(scope.row)" type="text" size="small">编辑</e-btn>
           <!--<el-button @click="updateMenuRole(scope.row)" type="text" size="small">分配页面权限</el-button>-->
-          <el-button
+          <e-btn
             v-if="scope.row.username != 'admin'"
+            tag="setting.user@delete"
             class="table-delete"
             type="text"
             size="small"
             @click="deleteUser(scope.row)"
-          >删除</el-button>
+          >
+            删除
+          </e-btn>
         </template>
       </el-table-column>
     </el-table>
+    <div class="pagination">
+      <el-pagination
+        :disabled="!canGetUser"
+        @size-change="loadData"
+        @current-change="loadData"
+        :current-page.sync="page"
+        :page-sizes="[10, 20, 50, 100]"
+        :page-size.sync="limit"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total"
+      ></el-pagination>
+    </div>
   </div>
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 export default {
   data() {
     return {
+      limit: 10,
+      page: 1,
+      total: 0,
       search: "",
-      users: [],
+      list: [],
       loading: false
     }
   },
   created() {
     this.loadData()
   },
+  computed: {
+    ...mapGetters({
+      widgets: "permission/widgets",
+    }),
+    canGetUser() {
+      return this.widgets.includes("setting.user@get")
+    }
+  },
   methods: {
     // 数据加载
     loadData() {
-      let { search } = this;
+      let { limit, page, search } = this;
       this.loading = true;
-      this.$apis.getAllUser({ search })
+      this.$apis.getAllUser({ limit, page, search })
         .then(res => {
           console.log(res.data)
           let { error_code, data } = res.data;
           if (error_code == 2001) {
-            this.users = data.data;
+            this.list = data.data;
+            this.total = data.total;
           }
-        }).finally(() => {
+        })
+        .finally(() => {
           this.loading = false;
         });
     },

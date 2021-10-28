@@ -20,12 +20,10 @@ class ApiAuthController extends Controller{
      * showdoc
      * @catalog 前台/用户
      * @title 用户获取token接口_v1.0
-     * @description HuDK
+     * @description 用户获取token接口_v1.0
      * @method POST
      * @url http://xx.com/api/auth/login
      * @param openid 必选 string 用户openid
-     * @param username 必选 string 用户名
-     * @param password 必选 string 密码
      * @return {"success": true,"token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9xaXl1YW4uY2NcL2FwaVwvYXV0aFwvbG9naW4iLCJpYXQiOjE2MDA4MzI4ODksImV4cCI6MTYwMDkxOTI4OSwibmJmIjoxNjAwODMyODg5LCJqdGkiOiI5QlduZk5CeUZKN3FORGNyIiwic3ViIjoxLCJwcnYiOiJiNGI3NjMyZjkwNWYwOGM4NjI3YjRlNmNmM2RmNmE4NWU4NWM0MjhlIn0.egfHzHTEgRV0eSlEsBoXstMjqf4Tfw4Wc35eGIl_95A","token_type": "bearer","expires_in": 86400}
      * @return_param error_code int 返回码
      * @return_param message string 返回说明
@@ -36,14 +34,21 @@ class ApiAuthController extends Controller{
      * @TIME: 11:41 上午
      */
     public function login(Request $request){
+
+        #region 使用用户账号密码进行认证
+        //$input = $request->only("username","password");
+        //$jwt_token = null;
+        //$jwt_token = auth('admin')->attempt($input);
+        #endregion
+
         #region 使用用户模型进行认证
         $openid = $request->openid;
         if (!$openid){
-            return response()->json(['success' => false,'message' => 'Invalid User111'],401);
+            return response()->json(['success' => false,'message' => 'Invalid User'],401);
         }
         $member = Member::where('openid',$openid)->first();
         if (!$member){
-            return response()->json(['success' => false,'message' => 'Invalid User222'],401);
+            return response()->json(['success' => false,'message' => 'Invalid User'],401);
         }
         $jwt_token = auth('api')->fromUser($member);
         #endregion

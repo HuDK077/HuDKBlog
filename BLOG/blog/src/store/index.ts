@@ -1,4 +1,4 @@
-import userStore, { key as userKey } from "./modules/user";
+import userStore, { key as userKey } from "./modules/User";
 const modules = [
     {
         modelName: userStore,

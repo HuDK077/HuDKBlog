@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import { scrollBehavior } from '@/utils/index.js'
+import { scrollBehavior } from '@/common/utils'
 import { routes } from "./routes";
 
 const emptyFn = () => { }
@@ -21,7 +21,6 @@ export const routerOptions = {
 }
 
 export const router = new Router(routerOptions);
-
 export function createRouter() {
   return router
 }

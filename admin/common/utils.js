@@ -38,54 +38,6 @@ export function scrollBehavior(to, from, savedPosition) {
   } else {
     return { x: 0, y: 0 }
   }
-  // // If the returned position is falsy or an empty object, will retain current scroll position
-  // let position = false
-  // const Pages = getMatchedComponents(to)
-  // // Scroll to the top of the page if...
-  // if (
-  //   // One of the children set `scrollToTop`
-  //   Pages.some(Page => Page.options.scrollToTop) ||
-  //   // scrollToTop set in only page without children
-  //   (Pages.length < 2 && Pages.every(Page => Page.options.scrollToTop !== false))
-  // ) {
-  //   position = { x: 0, y: 0 }
-  // }
-  // // savedPosition is only available for popstate navigations (back button)
-  // if (savedPosition) {
-  //   position = savedPosition
-  // }
-  // const nuxt = window.$nuxt
-  // if (
-  //   // Route hash changes
-  //   (to.path === from.path && to.hash !== from.hash) ||
-  //   // Initial load (vuejs/vue-router#3199)
-  //   to === from
-  // ) {
-  //   nuxt.$nextTick(() => nuxt.$emit('triggerScroll'))
-  // }
-  // return new Promise((resolve) => {
-  //   // wait for the out transition to complete (if necessary)
-  //   nuxt.$once('triggerScroll', () => {
-  //     // coords will be used if no selector is provided,
-  //     // or if the selector didn't match any element.
-  //     if (to.hash) {
-  //       let hash = to.hash
-  //       // CSS.escape() is not supported with IE and Edge.
-  //       if (typeof window.CSS !== 'undefined' && typeof window.CSS.escape !== 'undefined') {
-  //         hash = '#' + window.CSS.escape(hash.substr(1))
-  //       }
-  //       try {
-  //         if (document.querySelector(hash)) {
-  //           // scroll to anchor by returning the selector
-  //           position = { selector: hash }
-  //         }
-  //       } catch (e) {
-  //         console.warn('Failed to save scroll position. Please add CSS.escape() polyfill (https://github.com/mathiasbynens/CSS.escape).')
-  //       }
-  //     }
-  //     resolve(position)
-  //   })
-  // })
 }
 
 /**
@@ -128,8 +80,6 @@ export function routerArr(route) {
         let children = routerArr(v.children);
         if (children.length) {
           obj.children = children;
-        } else {
-          delete v.children
         }
       }
       arr.push(obj);
@@ -186,7 +136,7 @@ export function randomString(e) {
   var t = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890",
     a = t.length,
     n = "";
-  for (let i = 0; i < e; i++) n += t.charAt(Math.floor(Math.random() * a));
+  for (i = 0; i < e; i++) n += t.charAt(Math.floor(Math.random() * a));
   return n
 }
 
@@ -199,4 +149,23 @@ export function randomNum(Min, Max) {
   var Range = Max - Min;
   var Rand = Math.random();
   return (Min + Math.round(Rand * Range));
+}
+
+/**
+ * 数据比对
+ * @param {Object} originalData 源数据
+ * @param {object} finalData 新数据
+ * @returns 返回更改的数据
+ */
+export function diffData(originalData, finalData) {
+  var diffData = ''
+  for (const i in originalData) {
+    if (originalData[i] != finalData[i]) {
+      if (!diffData) {
+        diffData = {}
+      }
+      diffData[i] = finalData[i]
+    }
+  }
+  return diffData
 }

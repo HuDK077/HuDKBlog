@@ -1,5 +1,5 @@
 import Vue from "vue";
-import BMF from "@/utils/BMF";
+import BMF from "@/common/BMF";
 export class QiNiu {
   constructor(vm) {
     this.vm = vm
@@ -80,8 +80,7 @@ export class QiNiu {
             console.log(md5);
             Vue.prototype.$apis.getImageFileCheck({ file_id: md5 })
               .then(res => {
-                console.log(1111)
-                console.log(res.data)
+                // console.log(res.data)
                 let { error_code, data } = res.data;
                 if (error_code == 2001) {
                   resolve(data);

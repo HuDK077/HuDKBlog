@@ -3,11 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Api\Designer;
 use App\Models\Api\Member;
 use Illuminate\Http\Request;
 use Exception;
-use Illuminate\Support\Facades\DB;
 
 class MemberController extends Controller
 {
@@ -56,9 +54,9 @@ class MemberController extends Controller
      * @url http://xx.com/admin/member/updateMember
      * @header token 必选 string 设备token
      * @param id 必选 int 用户ID
-     * @param avatar 非必选 string 用户头像
      * @param real_name 非必选 string 用户姓名
      * @param phone 非必选 string 用户手机号
+     * @param type 非必选 int 用户类型  1 普通用户 2 销售员 3送水员
      * @return {"error_code": 2001,"data": [],"message": "success"}
      * @return_param error_code int 返回码
      * @return_param message string 返回说明
@@ -69,77 +67,17 @@ class MemberController extends Controller
      * @throws \Illuminate\Validation\ValidationException
      */
     public function updateMember(Request $request){
-        if ($this->GDT('member.update')){
+        if ($this->GDT('member')){
             return response('',403);
         }
         $this->validate($request,[
             'id' => 'required'
         ]);
         try{
-            $data = [
-                'avatar' => $request->avatar,
-                'real_name' => $request->real_name,
-                'phone' => $request->phone,
-            ];
+            $data = ['real_name' => $request->real_name,'phone' => $request->phone,'id' => $request->id,'type' => $request->type];
             Member::where('id',$request->id)->update($data);
             return apiResponse(2001);
         }catch (Exception $exception){
-            return apiResponse(2005,[],$exception->getMessage());
-        }
-    }
-
-    /**
-     * showdoc
-     * @catalog 后台/用户管理
-     * @title 设置用户为设计师
-     * @description Trace
-     * @method POST
-     * @url http://xx.com/admin/member/setDesigner
-     * @header token 必选 string 设备token
-     * @param id 必选 int 用户ID
-     * @return
-     * @return_param error_code int 返回码
-     * @return_param message string 返回说明
-     * @remark 这里是备注信息
-     * @number 99
-     * @DATE 2021/6/18
-     * @TIME 17:09
-     */
-    public function setDesigner(Request $request)
-    {
-        if ($this->GDT('member.setDesigner')){
-            return response('',403);
-        }
-        $this->validate($request,[
-            'id' => 'required|exists:App\Models\Api\Member,id',
-        ],[
-            'id.exists' => '用户信息异常'
-        ]);
-        $member = Member::find($request->id);
-        if ($member->type == 2) {
-            return apiResponse(2005,[],'用户已是设计师');
-        }
-        if ($member->type == 3) {
-            return apiResponse(2005,[],'用户已是工艺师');
-        }
-
-        $add_apply = [
-            'mid' => $member->id,
-            'name' => $member->nickname,
-            'phone' => $member->phone,
-            'avatar' => $member->avatar,
-            'status' => 1,
-            'is_check' => 1
-        ];
-        DB::beginTransaction();
-        try {
-            $designer = Designer::create($add_apply);
-            $member->type = 2;
-            $member->save();
-            DB::commit();
-            return apiResponse(2001,$designer);
-        } catch (Exception $exception) {
-            DB::rollBack();
             return apiResponse(2005,[],$exception->getMessage());
         }
     }

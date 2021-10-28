@@ -1,8 +1,18 @@
-import { Detector } from "@/utils/Detector.js";
-// import * as THREE from 'three';
-import { THREE, GeometryUtils } from "./three";
-require("@/utils/RequestAnimationFrame.js");
+import { Detector } from "@/common/Detector.js";
+import { THREE, GeometryUtils } from "@/common/three";
 
+if (!window.requestAnimationFrame) {
+  window.requestAnimationFrame = function () {
+    return window.webkitRequestAnimationFrame ||
+      window.mozRequestAnimationFrame ||
+      window.oRequestAnimationFrame ||
+      window.msRequestAnimationFrame ||
+      function (callback, element) {
+        console.log(">>>>");
+        window.setTimeout(callback, 1e3 / 60);
+      };
+  }();
+}
 
 class CLOUD {
   constructor(id) {

@@ -2,12 +2,12 @@
   <div>
     <div class="logo" @click="toHome">
       <transition name="el-fade-in-linear">
-        <e-img v-if="sideShow" :id="siteConfig.logo" src="/image/logo.png" class="logo-img">
+        <e-img v-if="sideShow" :src="siteConfig.logo_src || '/image/logo.png'" class="logo-img">
           <el-image slot="error" src="/image/logo.png"></el-image>
         </e-img>
       </transition>
       <transition name="el-fade-in-linear">
-        <e-img v-if="!sideShow" :id="siteConfig.logo_sm" src="/image/logo_sm.png" class="logo-img-sm">
+        <e-img v-if="!sideShow" :src="siteConfig.logo_sm_src || '/image/logo_sm.png'" class="logo-img-sm">
           <el-image slot="error" src="/image/logo_sm.png"></el-image>
         </e-img>
       </transition>
@@ -26,32 +26,26 @@
         <template v-for="item in menuList">
           <!-- 单item -->
           <el-menu-item
-            v-if="!item.children && menus.includes(item.name)"
+            v-if="!item.children || (item.children && !item.children.length)"
             :key="item.name"
             :index="item.name"
             :route="item.path"
             :disabled="item.disabled"
           >
-            <i class="menu-icon" :class="item.meta.icon" />
-            <span slot="title">{{ item.meta.title }}</span>
+            <i class="menu-icon" :class="item.icon || item.meta.icon" />
+            <span slot="title">{{ item.title || item.meta.title }}</span>
           </el-menu-item>
           <!-- 有二级 -->
-          <el-submenu v-if="item.children && menus.includes(item.name)" :key="item.name" :index="item.name">
+          <el-submenu v-if="item.children && item.children.length" :key="item.name" :index="item.name">
             <template slot="title">
-              <i class="menu-icon" :class="item.meta.icon" />
-              <span>{{ item.meta.title }}</span>
+              <i class="menu-icon" :class="item.icon || item.meta.icon" />
+              <span>{{ item.title || item.meta.title }}</span>
             </template>
 
             <template v-for="child in item.children">
-              <el-menu-item
-                v-if="menus.includes(child.name)"
-                :key="child.name"
-                :index="child.name"
-                :route="child.path"
-                :disabled="child.disabled"
-              >
-                <i class="menu-icon" :class="child.meta.icon" />
-                <span slot="title">{{ child.meta.title }}</span>
+              <el-menu-item :key="child.name" :index="child.name" :route="child.path" :disabled="child.disabled">
+                <i class="menu-icon" :class="child.icon || child.meta.icon" />
+                <span slot="title">{{ child.title || child.meta.title }}</span>
               </el-menu-item>
             </template>
           </el-submenu>
@@ -62,7 +56,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters } from "vuex";
 const themes = {
   default: {
     bgc: "#304156",
@@ -80,16 +74,17 @@ export default {
     ...mapGetters({
       sideShow: "local/sidebar",
       routes: "permission/routes",
-      menus: "permission/menus",
+      // menus: "permission/menus",
       theme: "local/theme",
       siteConfig: "local/siteConfig"
     }),
     active() {
       if (this.$route.meta && this.$route.meta.equal) {
-        return this.$route.meta.equal
+        return this.$route.meta.equal;
       }
-      let name = this.$route.name.split(":")[0];
-      return name
+      if (this.$route.name) {
+        return this.$route.name.split(":")[0];
+      }
     },
     bgc() {
       return themes[this.theme].bgc || "";
@@ -99,64 +94,41 @@ export default {
     },
     atc() {
       return themes[this.theme].atc || "";
-    },
+    }
   },
   data() {
     return {
       sortList: [],
       menuList: [],
-      childSort: [],
-    }
+      childSort: []
+    };
   },
   methods: {
     sortMenu() {
       if (!this.routes.length) {
-        return
+        return;
       }
-      if (!this.menus.length) {
-        this.menuList = this.routes;
-      } else {
-        let menuList = this.$clone(this.routes);
-        // 排除空列表
-        let tempList = [];
-        menuList.forEach(v => {
-          if (v.children) {
-            let child = 0;
-            v.children.forEach(c => {
-              if (this.menus.includes(c.name)) {
-                child++;
-              }
-            })
-            if (child) {
-              tempList.push(v);
+      let menuList = this.$clone(this.routes);
+      // 排除空列表
+      let tempList = [];
+      menuList.forEach(v => {
+        if (v.children && v.children.length) {
+          let tempChild = [];
+          v.children.forEach(c => {
+            if (!c.meta.hidden) {
+              tempChild.push(c)
             }
-          } else {
-            tempList.push(v);
-          }
-        })
-        this.sort4Tree(tempList);
-        this.menuList = tempList;
-        this.childSort = [];
-      }
-    },
-    //  树形排序
-    sort4Tree(list) {
-      let base = this.menus;
-      list.sort((a, b) => {
-        if (a.children && !this.childSort.includes(a.name)) {
-          this.sort4Tree(a.children);
-          this.childSort.push(a.name);
+          })
+          v.children = tempChild
+        } else {
+          tempList.push(v);
         }
-        if (b.children && !this.childSort.includes(b.name)) {
-          this.sort4Tree(b.children)
-          this.childSort.push(b.name);
-        }
-        return base.indexOf(a.name) < base.indexOf(b.name) ? -1 : 0;
       })
+      this.menuList = menuList;
     },
     // 去首页
     toHome() {
-      this.$router.push({ path: "/" })
+      this.$router.push({ path: "/" });
     }
   },
   created() {
@@ -165,16 +137,16 @@ export default {
   watch: {
     routes(n) {
       if (n) {
-        this.sortMenu()
-      }
-    },
-    menus(n) {
-      if (n) {
-        this.sortMenu()
+        this.sortMenu();
       }
     }
-  },
-}
+    // menus(n) {
+    //   if (n) {
+    //     this.sortMenu();
+    //   }
+    // }
+  }
+};
 </script>
 
 <style lang="scss" scoped>

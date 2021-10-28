@@ -7,21 +7,15 @@
       type="error"
     ></el-alert>
     <el-form v-if="webForms.length" :model="webForm" ref="webForm" label-width="6em">
-      <template v-for="(item,index) in webForms">
+      <template v-for="(item, index) in webForms">
         <el-form-item :key="index" :label="item.description">
           <el-input v-model="webForm[item.name]"></el-input>
         </el-form-item>
       </template>
 
       <el-form-item label="logo">
-        <el-upload
-          drag
-          action="/"
-          class="logo-uploader default"
-          :show-file-list="false"
-          :before-upload="uploadFilter('logo')"
-        >
-          <e-img v-if="logoForm.logo" :id="logoForm.logo" class="logo" />
+        <el-upload drag action="/" class="logo-uploader default" :show-file-list="false" :before-upload="uploadFilter('logo')">
+          <e-img v-if="logoForm.logo" :src="logoForm.logo_src" class="logo" />
           <div v-else>
             <i class="el-icon-upload"></i>
             <div class="el-upload__text">
@@ -32,19 +26,13 @@
         </el-upload>
       </el-form-item>
       <el-form-item label="logo(小)">
-        <el-upload
-          drag
-          action="/"
-          class="logo-uploader logo-uploader-sm"
-          :show-file-list="false"
-          :before-upload="uploadFilter('logo_sm')"
-        >
-          <e-img v-if="logoForm.logo_sm" :id="logoForm.logo_sm" class="logo-sm" />
+        <el-upload drag action="/" class="logo-uploader logo-uploader-sm" :show-file-list="false" :before-upload="uploadFilter('logo_sm')">
+          <e-img v-if="logoForm.logo_sm" :src="logoForm.logo_sm_src" class="logo-sm" />
           <div v-else>
             <i class="el-icon-upload"></i>
             <div class="el-upload__text">
               将文件拖到此处，
-              <div style="line-height:1">
+              <div style="line-height: 1">
                 或
                 <em>点击上传</em>
               </div>
@@ -53,27 +41,39 @@
         </el-upload>
       </el-form-item>
     </el-form>
-    <el-button type="primary" @click="confirmWeb">更新网站配置</el-button>
+    <e-btn tag="setting.option@update" type="primary" @click="confirmWeb">更新网站配置</e-btn>
   </div>
 </template>
 
 <script>
 export default {
   data() {
-    let webArr = ["website_title", "website_keywords", "company_full_name", "company_short_name", "company_telephone", "website_icp", "system_version", "system_author", "system_author_website"];
+    let webArr = [
+      "website_title",
+      "website_keywords",
+      "company_full_name",
+      "company_short_name",
+      "company_telephone",
+      "website_icp",
+      "system_version",
+      "system_author",
+      "system_author_website"
+    ];
     return {
       webForm: {},
       webForms: [],
       logoForm: {
         logo: "",
+        logo_src: "",
         logo_sm: "",
+        logo_sm_src: "",
       },
       loading: true,
-      webArr,
-    }
+      webArr
+    };
   },
   created() {
-    this.loadData()
+    this.loadData();
   },
   methods: {
     // 数据加载
@@ -93,20 +93,25 @@ export default {
               }
               if (v.name == "logo") {
                 this.logoForm.logo = v.value;
+                this.logoForm.logo_src = v.value_src;
               }
               if (v.name == "logo_sm") {
                 this.logoForm.logo_sm = v.value;
+                this.logoForm.logo_sm_src = v.value_src;
               }
             });
             let webForms = [];
             this.webArr.forEach(v => {
               // console.log(v);
-              let res = webTemp.find(f => { return f.name == v });
+              let res = webTemp.find(f => {
+                return f.name == v;
+              });
               webForms.push(res);
-            })
+            });
             this.webForms = webForms;
           }
-        }).finally(() => {
+        })
+        .finally(() => {
           this.loading = false;
         });
     },
@@ -115,26 +120,30 @@ export default {
       let arr = [];
       let { webForm, logoForm } = this;
       Object.keys(webForm).forEach(v => {
-        let res = this.webForms.find(f => { return f.name == v });
+        let res = this.webForms.find(f => {
+          return f.name == v;
+        });
         if (res) {
           res.value = webForm[v];
           arr.push(res);
         }
-      })
+      });
       Object.keys(logoForm).forEach(v => {
-        let obj = {}
-        obj.name = v;
-        obj.value = logoForm[v];
-        arr.push(obj);
-      })
+        if (!v.includes("_src")) {
+          let obj = {};
+          obj.name = v;
+          obj.value = logoForm[v];
+          arr.push(obj);
+        }
+      });
 
       this.$apis.updateConfig(arr)
         .then(res => {
-          console.log(res.data)
+          console.log(res.data);
           let { error_code, message } = res.data;
           if (error_code == 2001) {
             this.$message.success("更新成功");
-            this.$updateSiteConfig();
+            this.$store.dispatch("local/getSiteConfig");
           } else {
             this.$message.error(message);
           }
@@ -142,32 +151,27 @@ export default {
     },
     // 上传文件
     uploadFilter(name) {
-      return (file) => {
+      return file => {
         let { type, size } = file;
         if (type.split("/")[0] != "image") {
           this.$message.warning("请上传图片类型的文件");
-          return false
+          return false;
         }
         if (size / 1024 > 300) {
           this.$message.warning("请上传大小小于300kb的图片");
-          return false
+          return false;
         }
-
-        let fd = new FormData();
-        fd.append("file", file)
-        this.$apis.uploadImage(fd, { headers: { 'Content-Type': 'multipart/form-data' } })
+        this.$qiniu.upload(file)
           .then(res => {
-            let { error_code, data } = res.data;
-            if (error_code == 2001) {
-              this.logoForm[name] = data.file_id;
-            }
+            let { file_id, img } = res;
+            this.logoForm[name] = file_id;
+            this.logoForm[name + "_src"] = img;
           });
         return false;
-
-      }
-    },
-  },
-}
+      };
+    }
+  }
+};
 </script>
 
 <style lang="scss" scoped>

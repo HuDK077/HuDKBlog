@@ -4,7 +4,18 @@
 </template>
 <script setup lang="ts">
 import {apis} from '@/plugins/apis'
-import user from "@/store/modules/user";
+import user from "@/store/modules/User";
+import SocketService from "@/plugins/websocket";
+import {reactive} from "vue";
+
+const data = reactive({
+    socketServer: SocketService.Instance
+});
+SocketService.connect()
+SocketService.send('给我发消息干什么');
+
+// console.log(SocketService.onMessage())
+
 // import { io } from "socket.io-client";
 // const socket = io("ws://blog.cc:5500");
 // console.log(socket)

@@ -19,7 +19,7 @@ export const mutations = {
         name: view.name,
         meta: view.meta,
         path: view.fullPath,
-        title: view.meta.title || 'no-name'
+        title: view.title || view.meta.title || 'no-name'
       })
     }
 

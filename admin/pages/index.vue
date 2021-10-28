@@ -3,12 +3,13 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 export default {
   name: "index",
   computed: {
-    keepAliveConf() {
-      return this.$store.getters["local/keepAliveList"];
-    }
+    ...mapGetters({
+      keepAliveList: "local/keepAliveList"
+    }),
   },
   data() {
     return {
@@ -16,18 +17,19 @@ export default {
     }
   },
   activated() {
+    console.log("activated");
     this.pageActive = true
   },
   deactivated() {
+    console.log("deactivated");
     this.pageActive = false
   },
   watch: {
-    keepAliveConf(n) {
-      console.warn(n);
+    keepAliveList(n, o) {
+      console.warn(n, o);
       let name = this.$route.name;
-      // console.log("check destroy", name);
-      if (!this.$store.getters["local/keepAliveList"].includes(name) && !this.pageActive) {
-        // console.log("destroy", name);
+      console.log("check destroy", name);
+      if (!n.includes(name) && !this.pageActive) {
         this.$destroy()
       }
     }

@@ -50,8 +50,8 @@
 </template>
 
 <script>
-import CLOUD from "../utils/cloud";
-import { mapGetters } from 'vuex'
+import CLOUD from "@/common/cloud";
+import { mapGetters } from "vuex";
 
 export default {
   layout: "login",
@@ -71,16 +71,13 @@ export default {
         password: ""
       },
       rules: {
-        username: [
-          { required: true, message: '请输入用户名', trigger: 'blur' }
-        ],
-        password: [
-          { required: true, message: '请输入密码', trigger: 'blur' }
-        ],
+        username: [{ required: true, message: "请输入用户名", trigger: "blur" }],
+        password: [{ required: true, message: "请输入密码", trigger: "blur" }]
       }
     };
   },
   created() {
+    window.lth = this;
     let ui = localStorage.getItem("ui");
     if (ui) {
       try {
@@ -108,7 +105,7 @@ export default {
     if (this.cloud) {
       this.cloud.unLoad();
     }
-    this.$destroy();
+    // this.$destroy();
     this.$store.dispatch("auth/initStatus", "success");
     next();
   },
@@ -119,7 +116,8 @@ export default {
       this.$refs["form"].validate(vaild => {
         if (vaild) {
           this.loading = true;
-          this.$apis.login({ ...form })
+          this.$apis
+            .login({ ...form })
             .then(res => {
               console.log(res);
               let { error_code, message, token } = res.data;
@@ -129,20 +127,15 @@ export default {
                   obj.u = window.btoa(form.username);
                   obj.p = window.btoa(form.password);
                   obj.c = [1];
-                  localStorage.setItem("ui", JSON.stringify(obj))
+                  localStorage.setItem("ui", JSON.stringify(obj));
                 } else {
                   localStorage.removeItem("ui");
                 }
-                this.$qiniu.getQiniuToken()
                 this.$store.dispatch("auth/setToken", { token });
-                // return this.$apis.getAuthUser()
-                this.$updateUser((s, r) => {
+                this.$store.dispatch("auth/getAuthUser", (s, r) => {
                   console.log(s, r);
                   if (s) {
-                    this.$notify.success({
-                      title: "登录成功",
-                      message: "欢迎回来"
-                    });
+                    this.$notify.success({ title: "登录成功", message: "欢迎回来" });
                     setTimeout(() => {
                       this.$router.push({ name: "home" });
                       if (this.cloud) {
@@ -150,10 +143,12 @@ export default {
                       }
                     }, 500);
                   } else {
-                    this.$notify.error(r.data.message);
+                    if (r.data.message) {
+                      this.$notify.error(r.data.message);
+                    }
                     return Promise.reject(r);
                   }
-                })
+                });
               } else {
                 console.log("登录失败");
                 this.$notify.error(message);
@@ -173,8 +168,8 @@ export default {
         } else {
           this.$notify.warning("请输入用户名和密码");
         }
-      })
-    },
+      });
+    }
   }
 };
 </script>

@@ -1,4 +1,10 @@
 {
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://mirrors.aliyun.com/composer/"
+        }
+    ],
     "name": "laravel/laravel",
     "type": "project",
     "description": "The Laravel Framework.",
@@ -14,15 +20,16 @@
         "fideloper/proxy": "^4.2",
         "fruitcake/laravel-cors": "^1.0",
         "guzzlehttp/guzzle": "^6.3",
-        "hhxsv5/laravel-s": "^3.7",
         "laravel/framework": "^7.0",
         "laravel/tinker": "^2.0",
         "mix/guzzle": "^2.2",
         "orangehill/iseed": "^2.6",
         "overtrue/laravel-wechat": "^6.0",
         "predis/predis": "^1.1",
+        "tymon/jwt-auth": "^1.0",
+        "zgldh/qiniu-laravel-storage": "^0.10.3",
         "qiniu/php-sdk": "^7.4",
-        "tymon/jwt-auth": "^1.0"
+        "hhxsv5/laravel-s": "^3.7"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.8",

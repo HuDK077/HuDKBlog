@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\File;
 use Illuminate\Http\Request;
 use Qiniu\Auth;
+use zgldh\QiniuStorage\QiniuStorage;
 
 class FileController extends Controller
 {
@@ -15,7 +16,7 @@ class FileController extends Controller
      * @title  图片上传接口
      * @description 图片上传接口
      * @method POST
-     * @url http://xx.com/api/file/uploadImage
+     * @url http://xx.com/admin/file/uploadImage
      * @header token 必选 string 设备token
      * @param file 必选 文件 文件
      * @return
@@ -29,6 +30,7 @@ class FileController extends Controller
      */
     public function uploadImage(Request $request)
     {
+
         $file = $request->file('file');
         // 判断是否上传成功
         if (!$file->isValid()) {
@@ -90,6 +92,7 @@ class FileController extends Controller
             mkdir($path, 0777, true);
         }
     }
+
 
     /**
      * showdoc
@@ -157,83 +160,41 @@ class FileController extends Controller
     public function uploadFile(Request $request)
     {
         $file = $request->file('file');
-        $type = [];
-        if (is_array($request->type)) {
-            $type = $request->type;
-        }
         // 判断是否上传成功
-        if (empty($file) || !$file->isValid()) {
+        if (!$file->isValid()) {
             return ['status' => 0, 'message' => '文件上传失败'];
         }
-        $path = '/uploads/admin/' . date('Y_m_d');
-        if ($request->path_api) {
-            $path = $request->path_api;
-        }
-        if (allowExt($file, $type)) {
-            return ['status' => 0, 'message' => '文件类型不允许'];
-        }
-        $disk = env('FILE_UPLOAD_DISK', 'local');
         $file_Id = md5_file($file);
+
         $temp_file = File::where('file_id', $file_Id)->first();
-        $res['file_id'] = $file_Id;
-        $client_file_name = $file->getClientOriginalName();//获取用户设置的文件名称
-        $fileName = $file_Id . '_' . $client_file_name;
+        $res = [];
         if (!$temp_file) {
+            $client_file_name = $file->getClientOriginalName();//获取用户设置的文件名称
             // 获取文件扩展名
             $mimeType = $file->getMimeType();
             $fileSize = filesize($file);
             // 为避免一个文件夹中的文件过多和文件名重复,所以需要设置上传文件夹和文件名
+            $path = '/uploads/admin/' . date('Y_m_d');
             $this->setFilePath(storage_path() . $path);
-            $file_real_path = $file->getRealPath();
-            $data = [
-                'file_id' => $file_Id,
-                'mime_type' => $mimeType,
-                'size' => $fileSize,
-                'file_name' => $fileName,
-                'client_file_name' => $client_file_name,
-                'file_path' => $path . '/' . $fileName,
-                'disk' => $disk,
-            ];
+            $fileName = $file_Id . '_' . $client_file_name;
             // 上传文件并判断
-            switch ($disk) {
-                case "local": //本地
-                    if ($file->move(storage_path() . $path, $fileName)) {
-                        File::create($data);
-                        $res['img'] = env('APP_URL') . '/admin/file/getFile?file_id=' . $file_Id;
-                    } else {
-                        return apiResponse(2005, [], '上传失败');
-                    }
-                    break;
-                case "qiniu": //七牛cdn
-                    $qiniu = \Storage::disk('qiniu');
-                    $file_path = 'website/' . $fileName;
-                    $file_exists = $qiniu->exists($file_path);
-                    $data['file_path'] = $file_path;
-                    if (!$file_exists) {
-                        $bool = $qiniu->put($file_path, file_get_contents($file->getRealPath()));
-                        if ($bool) {
-                            File::create($data);
-                            $res['img'] = $qiniu->url(['path' => $file_path, 'domainType' => 'default']);
-                        } else {
-                            return apiResponse(2005, [], '上传失败');
-                        }
-                    }
-                    $res['file_id'] = $file_path;//cdn使用file_path
-                    break;
-            }
-        } else {
-            $disk = $temp_file->disk;
-            switch ($disk) {
-                case "local":
-                    $res['img'] = env('APP_URL') . '/admin/file/getFile?file_id=' . $file_Id;
-                    break;
-                case "qiniu":
-                    $qiniu = \Storage::disk('qiniu');
-                    $res['img'] = $qiniu->url(['path' => $temp_file->file_path, 'domainType' => 'default']);
-                    $res['file_id'] = $temp_file->file_path;
-                    break;
+            if ($file->move(storage_path() . $path, $fileName)) {
+                $data = [
+                    'file_id' => $file_Id,
+                    'mime_type' => $mimeType,
+                    'size' => $fileSize,
+                    'file_name' => $fileName,
+                    'client_file_name' => $client_file_name,
+                    'file_path' => $path . '/' . $fileName,
+                    'disk' => env('UPLOAD_DISK', 'local'),
+                ];
+                File::create($data);
+                $res['file_id'] = $file_Id;
+            } else {
+                return apiResponse(2005, [], '上传失败');
             }
         }
+        $res['file_id'] = $file_Id;
         return apiResponse(2001, $res);
     }
 
@@ -303,18 +264,22 @@ class FileController extends Controller
             return apiResponse(2006);
         }
         $file_disk = $request->type ?: $file->disk;
+        //$file_disk = $file->disk;
         switch ($file_disk) {
             case 'local'://存在本地storage
                 $temp_path = storage_path() . $file->file_path;
                 $pictureData = fread(fopen($temp_path, "r"), $file->size);
                 return response($pictureData, 200)->header('Content-Type', $file->mime_type);
+                break;
             case "qiniu":
                 $res['file_id'] = $file->file_path;//cdn使用file_path
                 $res['img'] = env('QINIU_DOMAIN_FULL') . $file->file_path;
                 return apiResponse(2001, $res);
+                break;
             default:
                 $data = ['file' => $file->file_path];
                 return apiResponse(2001, $data);
+                break;
         }
     }
 

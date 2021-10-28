@@ -38,6 +38,7 @@ export default function ({ store, env }) {
     }
   });
   Vue.config.errorHandler = function (err, vm, info) {
+    console.error(err);
     if (vm) {
       let error = {
         msg: err.message,
@@ -50,7 +51,6 @@ export default function ({ store, env }) {
       if (env.NODE_ENV == "production") {
         Vue.prototype.$apis.errorPush({ error })
       }
-      console.error(err, info)
     }
   }
 }

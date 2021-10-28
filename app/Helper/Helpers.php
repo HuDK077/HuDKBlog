@@ -6,8 +6,44 @@
  * Time: 1:46 PM
  */
 
+if (!function_exists("assoc_unique")) {
+    /*
+     * 二维数组根据某个key值去重
+     */
+    function assoc_unique($arr, $key)
+    {
+        $tmp_arr = array();
+        foreach ($arr as $k => $v) {
+            if (in_array($v[$key], $tmp_arr)) {//搜索$v[$key]是否在$tmp_arr数组中存在，若存在返回true
+                unset($arr[$k]);
+            } else {
+                array_push($tmp_arr, $v[$key]);
+            }
+        }
+        sort($arr); //sort函数对数组进行排序
+        return $arr;
+    }
+}
 
-
+if (!function_exists("list_to_tree")) {
+    //数组转树
+    function list_to_tree($menus, $id = 0)
+    {
+        $tree = array();
+        if (is_array($menus)) {
+            foreach ($menus as $menu) {
+                if ($menu['parent_id'] == $id) {
+                    $child = list_to_tree($menus, $menu['id']);
+                    if ($child) {
+                        $menu['children'] = $child;
+                    }
+                    array_push($tree, $menu);
+                }
+            }
+        }
+        return $tree;
+    }
+}
 
 if (!function_exists('randomCertificateId')) {
     /**

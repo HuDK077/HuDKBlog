@@ -1,10 +1,12 @@
+import Vue from "vue";
+const proto = Vue.prototype
 // state
 export const state = () => ({
   isLogin: false,
   token: "",
   timestamp: "",
   member: "",
-  role: "",
+  roles: [],
   init: "",
 })
 
@@ -14,22 +16,15 @@ export const getters = {
   token: state => state.token,
   timestamp: state => state.timestamp,
   member: state => state.member,
-  role: state => state.role,
+  roles: state => state.roles,
+  roleIds: state => state.roles.map(m => m.id),
   init: state => state.init,
-  isSupplier: state => {
-    if (state.role && state.role.slug == "supplier") {
-      return true
-    } else {
-      return false
-    }
-  }
 }
 
 // mutations
 export const mutations = {
   // 设置token
   SET_TOKEN(state, token) {
-    // console.error("SET_TOKEN", token);
     state.token = token;
     state.isLogin = true;
   },
@@ -38,19 +33,19 @@ export const mutations = {
     state.timestamp = timestamp;
   },
   // 更新用户信息
-  UPDATE_USER(state, { member, role }) {
+  UPDATE_USER(state, { member, roles }) {
     if (member) {
       state.member = member;
     }
-    if (role) {
-      state.role = role;
+    if (roles) {
+      state.roles = roles;
     }
   },
   // 登出
   LOGOUT(state) {
     state.isLogin = false;
     state.token = "";
-    state.role = "";
+    state.roles = [];
     state.member = "";
     state.init = "";
   },
@@ -63,7 +58,6 @@ export const mutations = {
 export const actions = {
   // 设置token
   setToken({ commit, getters }, { token, timestamp }) {
-    // commit('SET_TOKEN', token);
     if (!timestamp) {
       commit('SET_TOKEN', token);
     } else {
@@ -73,14 +67,29 @@ export const actions = {
       }
     }
   },
-  // 更新用户信息
-  updateMember({ commit }, { member, role }) {
-    commit('UPDATE_USER', { member, role });
+  // 更新用户
+  getAuthUser({ commit, dispatch }, cb) {
+    proto.$apis.getAuthUser({ option: ["member", "roles"] })
+      .then(res => {
+        console.log(res.data)
+        let { error_code, data } = res.data;
+        if (error_code == 2001) {
+          let { member, roles } = data
+          commit("UPDATE_USER", { member, roles })
+          dispatch("initStatus", "success");
+          if (cb) { cb(true, res); }
+        } else {
+          if (cb) { cb(false, res); }
+        }
+      }).catch((res) => {
+        if (cb) { cb(false, res); }
+      })
   },
   // 登出
   logout({ commit }) {
     commit('LOGOUT');
   },
+  // 初始化状态
   initStatus({ commit }, init) {
     if (init == "success") {
       setTimeout(() => {

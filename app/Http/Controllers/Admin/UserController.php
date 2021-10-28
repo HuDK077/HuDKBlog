@@ -3,15 +3,16 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin\AdminRoleMenu;
+use App\Models\Admin\AdminRoleWidget;
 use App\Models\Admin\AdminUser;
-use App\Models\Admin\RoleUser;
+use App\Models\Admin\AdminRoleUser;
 use Illuminate\Http\Request;
 use Exception;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
-
 
     /**
      * showdoc
@@ -36,26 +37,23 @@ class UserController extends Controller
      * @TIME: 9:49 上午
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function getUser(Request $request){
-        $this->validate($request,[
+    public function getUser(Request $request)
+    {
+        $this->validate($request, [
             'id' => 'required'
         ]);
-        $user = AdminUser::Leftjoin('admin_role_users','admin_role_users.user_id','=','admin_users.id')
-            ->LeftJoin('admin_roles','admin_roles.id','=','admin_role_users.role_id')
-            ->where(function ($query) use ($request){
-                $query->where('admin_users.id',$request->id);
+        $user = AdminUser::with('roles')
+            ->where(function ($query) use ($request) {
+                $query->where('admin_users.id', $request->id);
             })->select(
                 'admin_users.id',
                 'admin_users.username',
                 'admin_users.name',
                 'admin_users.avatar',
                 DB::raw("CONCAT('" . env('QINIU_DOMAIN_FULL') . "',avatar) as avatar_src"),
-                'admin_users.created_at',
-                'admin_role_users.role_id',
-                'admin_roles.name as role_name',
-                'admin_roles.slug'
+                'admin_users.created_at'
             )->first();
-        return apiResponse(2001,$user);
+        return apiResponse(2001, $user);
     }
 
     /**
@@ -81,27 +79,28 @@ class UserController extends Controller
      * @TIME: 2:17 下午
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function addUser(Request $request){
-        if ($this->GDT('user')){
-            return response('',403);
+    public function addUser(Request $request)
+    {
+        if ($this->GDT('user')) {
+            return response('', 403);
         }
-        $this->validate($request,[
+        $this->validate($request, [
             'username' => 'required|unique:admin_users',
             'name' => 'required',
             'role_id' => 'required',
             'password' => 'required'
         ]);
-        $data = ['username' => $request->username,'password' => bcrypt($request->password),'name' => $request->name,'avatar' => $request->avatar];
+        $data = ['username' => $request->username, 'password' => bcrypt($request->password), 'name' => $request->name, 'avatar' => $request->avatar];
         DB::beginTransaction();
-        try{
+        try {
             $res = AdminUser::create($data);
-            $role_user = ['role_id' => $request->role_id,'user_id' => $res->id];
-            RoleUser::create($role_user);
+            $role_user = ['role_id' => $request->role_id, 'user_id' => $res->id];
+            AdminRoleUser::create($role_user);
             DB::commit();
             return apiResponse(2001);
-        }catch (Exception $exception){
+        } catch (Exception $exception) {
             DB::rollBack();
-            return apiResponse(2005,$exception->getMessage());
+            return apiResponse(2005, $exception->getMessage());
         }
     }
 
@@ -124,35 +123,37 @@ class UserController extends Controller
      * @return_param name string 用户名
      * @return_param avatar string 头像
      * @return_param created_at string 创建时间
-     * @return_param username string 用户名
+     * @return_param roles array 角色组，包含以下4个字段
+     * @return_param id int 角色id
+     * @return_param name string 角色名称
+     * @return_param slug string 角色标签
+     * @return_param default string 1默认角色，2非默认
      * @remark 这里是备注信息
      * @number 99
      * @DATE: 2020/9/27
      * @TIME: 3:32 下午
      */
-    public function getAllUser(Request $request){
-        if ($this->GDT('user')){
-            return response('',403);
-        }
+    public function getAllUser(Request $request)
+    {
         $limit = $request->limit ? $request->limit : 15;  #分页
-        $users = AdminUser::Leftjoin('admin_role_users','admin_role_users.user_id','=','admin_users.id')
-            ->LeftJoin('admin_roles','admin_roles.id','=','admin_role_users.role_id')
-            ->where(function ($query) use ($request){
+        $users = AdminUser::with(['roles' => function ($query) {
+                $query->select('id', 'name', 'slug', 'default');
+            }]
+        )->where(function ($query) use ($request) {
             $search = $request->search;
-            if ($search){
-                $query->where('admin_users.username','like','%'.$search.'%')
-                ->orwhere('admin_users.name','like','%'.$search.'%');
+            if ($search) {
+                $query->where('admin_users.username', 'like', '%' . $search . '%')
+                    ->orwhere('admin_users.name', 'like', '%' . $search . '%');
             }
         })->select(
             'admin_users.id',
             'admin_users.username',
             'admin_users.name',
             'admin_users.avatar',
-            'admin_users.created_at',
-            'admin_roles.name as role_name',
-            'admin_roles.slug'
+            DB::raw("CONCAT('" . env('QINIU_DOMAIN_FULL') . "',avatar) as avatar_src"),
+            'admin_users.created_at'
         )->paginate($limit);
-        return apiResponse(2001,$users);
+        return apiResponse(2001, $users);
     }
 
     /**
@@ -174,19 +175,20 @@ class UserController extends Controller
      * @TIME: 2:59 下午
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function delUser(Request $request){
-        $this->validate($request,[
+    public function delUser(Request $request)
+    {
+        $this->validate($request, [
             'id' => 'required'
         ]);
         DB::beginTransaction();
-        try{
-            AdminUser::where('id',$request->id)->delete();      #删除账号
-            RoleUser::where('user_id',$request->id)->delete();  #删除账号与角色的关联
+        try {
+            AdminUser::where('id', $request->id)->delete();      #删除账号
+            AdminRoleUser::where('user_id', $request->id)->delete();  #删除账号与角色的关联
             DB::commit();
             return apiResponse(2001);
-        }catch (Exception $exception){
+        } catch (Exception $exception) {
             DB::rollBack();
-            return apiResponse(2005,$exception->getMessage());
+            return apiResponse(2005, $exception->getMessage());
         }
     }
 
@@ -203,7 +205,7 @@ class UserController extends Controller
      * @param username 必选 string 用户登录名
      * @param name 必选 string 用户展示名
      * @param avatar 必选 string 用户头像
-     * @param role_id 必选 int 角色ID
+     * @param role_id 必选 array 角色ID数组
      * @param password 非必选 string 用户密码
      * @return  {"error_code": 2001,"data": {},"message": "success"}
      * @return_param error_code int 返回码
@@ -214,27 +216,36 @@ class UserController extends Controller
      * @TIME: 2:24 下午
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function updateUser(Request $request){
-        $this->validate($request,[
+    public function updateUser(Request $request)
+    {
+        $this->validate($request, [
             'id' => "required",
-            'role_id' => "required",
+            'role_id' => "required|array",
             'username' => "required",
             'name' => "required",
             'avatar' => "required",
         ]);
-        $data = ['id' => $request->id,'username' => $request->username,'name' => $request->name,'avatar' => $request->avatar];
-        if ($request->password){
+        $data = ['username' => $request->username, 'name' => $request->name, 'avatar' => $request->avatar];
+        if ($request->password) {
             $data['password'] = bcrypt($request->password);
         }
-        DB::beginTransaction();
-        try{
-            AdminUser::where('id',$request->id)->update($data);
-            RoleUser::where('user_id',$request->id)->update(['role_id' => $request->role_id ]);
-            DB::commit();
-            return apiResponse(2001);
-        }catch (Exception $exception){
-            DB::rollBack();
-            return apiResponse(2005,$exception->getMessage());
+        try {
+            return DB::transaction(function () use ($request, $data) {
+                try {
+                    AdminUser::where('id', $request->id)->update($data);
+                    AdminRoleUser::where('user_id', $request->id)->delete();
+                    $u_r = [];
+                    foreach ($request->role_id as $role_id) {
+                        array_push($u_r, ['user_id' => $request->id, 'role_id' => $role_id]);
+                    }
+                    AdminRoleUser::insert($u_r);
+                    return apiResponse(2001);
+                } catch (\Exception $exception) {
+                    throw new \Exception($exception->getMessage());
+                }
+            });
+        } catch (\Exception $exception) {
+            return apiResponse(2005, [], $exception->getMessage());
         }
     }
 
@@ -259,21 +270,22 @@ class UserController extends Controller
      * @TIME: 9:38 上午
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function editUser(Request $request){
-        $this->validate($request,[
+    public function editUser(Request $request)
+    {
+        $this->validate($request, [
             'id' => "required",
             'name' => "required",
             'avatar' => "required",
         ]);
-        $data = ['id' => $request->id,'name' => $request->name,'avatar' => $request->avatar];
-        if ($request->password){
+        $data = ['id' => $request->id, 'name' => $request->name, 'avatar' => $request->avatar];
+        if ($request->password) {
             $data['password'] = bcrypt($request->password);
         }
-        try{
-            AdminUser::where('id',$request->id)->update($data);
+        try {
+            AdminUser::where('id', $request->id)->update($data);
             return apiResponse(2001);
-        }catch (Exception $exception){
-            return apiResponse(2005,$exception->getMessage());
+        } catch (Exception $exception) {
+            return apiResponse(2005, $exception->getMessage());
         }
     }
 

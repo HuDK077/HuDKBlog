@@ -1,10 +1,12 @@
 <?php
-namespace  App\Http\Controllers\Admin;
+
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Admin\Config;
+use App\Models\Admin\AdminConfig;
 use Illuminate\Http\Request;
 use DB;
+
 class ConfigController extends Controller
 {
 
@@ -25,13 +27,19 @@ class ConfigController extends Controller
      * @DATE: 2020/9/24
      * @TIME: 10:33 上午
      */
-    public function getConfigArray() {
-        $config = Config::select('name','value','description')->get();
-        $data = [];
-        foreach ($config as $item){
+    public function getConfigArray()
+    {
+        $config = AdminConfig::select('name', 'value', 'description')->get();
+        $data = ['logo_sm_src' => null, 'logo_src' => null];
+        foreach ($config as $item) {
+            if (strcmp($item->name, 'logo') == 0 && !empty($item->value)) {
+                $data['logo_src'] = env('QINIU_DOMAIN_FULL') . $item->value;
+            } elseif (strcmp($item->name, 'logo_sm') == 0 && !empty($item->value)) {
+                $data['logo_sm_src'] = env('QINIU_DOMAIN_FULL') . $item->value;
+            }
             $data[$item->name] = $item->value;
         }
-        return apiResponse(2001,$data);
+        return apiResponse(2001, $data);
     }
 
     /**
@@ -51,9 +59,19 @@ class ConfigController extends Controller
      * @DATE: 2020/9/24
      * @TIME: 10:33 上午
      */
-    public function getConfig() {
-        $config = Config::select('name','value','description')->get();
-        return apiResponse(2001,$config);
+    public function getConfig()
+    {
+        $config = AdminConfig::select('name', 'value', 'description')->get();
+        foreach ($config as $item) {
+            if (strcmp($item->name, 'logo') == 0 || strcmp($item->name, 'logo_sm') == 0) {
+                if (!empty($item->value)) {
+                    $item['value_src'] = env('QINIU_DOMAIN_FULL') . $item->value;
+                } else {
+                    $item['value_src'] = null;
+                }
+            }
+        }
+        return apiResponse(2001, $config);
     }
 
     /**
@@ -74,9 +92,10 @@ class ConfigController extends Controller
      * @DATE: 2020/9/24
      * @TIME: 10:51 上午
      */
-    public function updateConfig(Request $request){
-        if (self::GDT('config')){
-            return response('',403);
+    public function updateConfig(Request $request)
+    {
+        if (self::GDT('config')) {
+            return response('', 403);
         }
         $where = '';
         $data = $request->all();
@@ -84,10 +103,10 @@ class ConfigController extends Controller
             $where .= " when '{$item['name']}' then '{$item['value']}' ";
         }
         $sql = "update admin_config set value= case name {$where} END";
-        try{
+        try {
             DB::update($sql);
             return apiResponse(2001);
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             return apiResponse(2005);
         }
     }
@@ -111,21 +130,22 @@ class ConfigController extends Controller
      * @DATE: 2020/9/24
      * @TIME: 11:05 上午
      */
-    public function addConfig(Request $request){
-        if (self::GDT('config')){
-            return response('',403);
+    public function addConfig(Request $request)
+    {
+        if (self::GDT('config')) {
+            return response('', 403);
         }
-        try{
-            $this->validate($request,[
+        try {
+            $this->validate($request, [
                 "name" => "required|unique:admin_config",
                 "description" => "required|unique:admin_config",
                 "value" => "required"
             ]);
-            $data = [ 'name' => $request->name, 'value' => $request->value, 'description' => $request->description ];
-            Config::create($data);
+            $data = ['name' => $request->name, 'value' => $request->value, 'description' => $request->description];
+            AdminConfig::create($data);
             return apiResponse(2001);
-        }catch (\Exception $exception){
-            return apiResponse(2008,[],$exception->getMessage());
+        } catch (\Exception $exception) {
+            return apiResponse(2008, [], $exception->getMessage());
         }
     }
 

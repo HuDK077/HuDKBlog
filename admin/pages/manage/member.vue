@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="top-bar">
-      <el-input placeholder="搜索会员" v-model="search" class="input-with-select" @keyup.enter.native="loadData">
+      <el-input placeholder="搜索会员" v-model="search" class="input-with-select" @keyup.enter.native="loadData" v-if="canGetMember">
         <el-button slot="append" type="primary" icon="el-icon-search" @click="loadData">搜索</el-button>
       </el-input>
     </div>
@@ -17,19 +17,19 @@
         </template>
       </el-table-column>
       <el-table-column prop="gender" label="性别" width="50">
-        <template slot-scope="{row}">{{row.gender == 0 ? "未知" : row.gender == 1 ? "男" : "女"}}</template>
+        <template slot-scope="{ row }">{{ row.gender == 0 ? "未知" : row.gender == 1 ? "男" : "女" }}</template>
       </el-table-column>
       <el-table-column prop="phone" label="手机号" width="120"></el-table-column>
       <el-table-column prop="integral" label="积分"></el-table-column>
       <el-table-column prop="water_ticket" label="水票"></el-table-column>
       <el-table-column prop="type" label="会员类型">
-        <template slot-scope="{row}">{{getType(row.type)}}</template>
+        <template slot-scope="{ row }">{{ getType(row.type) }}</template>
       </el-table-column>
       <el-table-column prop="province" label="省份"></el-table-column>
       <el-table-column prop="city" label="城市"></el-table-column>
       <el-table-column fixed="right" label="操作" width="50">
         <template slot-scope="scope">
-          <el-button @click="editRow(scope.row)" type="text" size="small">编辑</el-button>
+          <e-btn tag="member@list" @click="editRow(scope.row)" type="text" size="small">编辑</e-btn>
         </template>
       </el-table-column>
     </el-table>
@@ -46,13 +46,7 @@
       ></el-pagination>
     </div>
 
-    <el-dialog
-      width="50%"
-      title="修改会员信息"
-      :visible.sync="showEditDialog"
-      :close-on-click-modal="false"
-      @closed="editDialogClosed"
-    >
+    <el-dialog width="50%" title="修改会员信息" :visible.sync="showEditDialog" :close-on-click-modal="false" @closed="editDialogClosed">
       <div>
         <el-form :model="form" :rules="rules" ref="form" label-width="10em" label-position="top">
           <el-form-item label="真实姓名" prop="real_name">
@@ -62,8 +56,8 @@
             <el-input @keyup.enter.native="submitMember" v-model="form.phone" :min="1" label="手机号"></el-input>
           </el-form-item>
           <el-form-item label="会员类型 " prop="type">
-            <el-select style="width:100%" v-model="form.type" placeholder="请选择会员类型">
-              <template v-for="(item,index) in menberType">
+            <el-select style="width: 100%" v-model="form.type" placeholder="请选择会员类型">
+              <template v-for="(item, index) in menberType">
                 <el-option :key="index" :label="item.name" :value="item.id"></el-option>
               </template>
             </el-select>
@@ -71,14 +65,15 @@
         </el-form>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button :loading="onEdit" @click="showEditDialog=false">取 消</el-button>
-        <el-button :loading="onEdit" type="primary" @click="submitMember">确 定</el-button>
+        <e-btn :loading="onEdit" @click="showEditDialog = false">取 消</e-btn>
+        <e-btn :loading="onEdit" type="primary" @click="submitMember" tag="member@list">确 定</e-btn>
       </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 export default {
   data() {
     const menberType = [
@@ -137,6 +132,14 @@ export default {
   },
   created() {
     this.loadData();
+  },
+  computed: {
+    ...mapGetters({
+      widgets: "permission/widgets",
+    }),
+    canGetMember() {
+      return this.widgets.includes("member@list")
+    }
   },
   methods: {
     // 数据加载

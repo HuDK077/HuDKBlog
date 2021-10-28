@@ -4,9 +4,8 @@ namespace  App\Http\Middleware;
 use Closure;
 use Illuminate\Auth\AuthenticationException;
 use Tymon\JWTAuth\Exceptions\JWTException;
-use Tymon\JWTAuth\Http\Middleware\BaseMiddleware;
 
-class ApiAuth extends BaseMiddleware
+class ApiAuth
 {
     /**
      * Handle an incoming request.

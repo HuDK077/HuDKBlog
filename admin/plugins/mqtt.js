@@ -1,4 +1,4 @@
-import MQTT from "@/configs/mqtt";
+import MQTT from "@/common/mqtt";
 export default function ({ store, env }, inject) {
   // console.log(env);
   const member = store.getters["auth/member"];

@@ -1,11 +1,7 @@
-import { deepClone } from "@/utils";
+import { deepClone } from "@/common/utils";
 import Vue from "vue";
 
 export default function ({ $axios, store, env, next, error, route }) {
-  // $axios.onRequest((config) => {
-  //   console.log('config: ', config)
-  //   return config
-  // })
   // 请求带token
   $axios.interceptors.request.use((request) => {
     request.baseURL = env.APP_URL
@@ -45,7 +41,7 @@ export default function ({ $axios, store, env, next, error, route }) {
           if (store.getters['auth/isLogin']) {
             store.dispatch("auth/logout");
           }
-          // console.warn(route.name, status);
+          console.warn(route.name, status);
           if (route.name != "login") {
             // console.warn(route.name, err.response);
             return next("/login");

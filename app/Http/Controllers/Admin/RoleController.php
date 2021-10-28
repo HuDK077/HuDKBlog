@@ -1,9 +1,12 @@
 <?php
-namespace  App\Http\Controllers\Admin;
+
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Admin\Role;
-use App\Models\Admin\RoleMenu;
+use App\Models\Admin\AdminRole;
+use App\Models\Admin\AdminRoleMenu;
+use App\Models\Admin\AdminRoleUser;
+use App\Models\Admin\AdminRoleWidget;
 use App\Models\Admin\RolePermissions;
 use Illuminate\Http\Request;
 use DB;
@@ -30,12 +33,13 @@ class RoleController extends Controller
      * @DATE: 2020/9/24
      * @TIME: 2:26 下午
      */
-    public function getRole(){
-        if (self::GDT('role')){
-            return response('',403);
+    public function getRole()
+    {
+        if (self::GDT('role')) {
+            return response('', 403);
         }
-        $temp = Role::get();
-        return apiResponse(2001,$temp);
+        $temp = AdminRole::get();
+        return apiResponse(2001, $temp);
     }
 
     /**
@@ -57,25 +61,26 @@ class RoleController extends Controller
      * @TIME: 11:22 上午
      * @throws
      */
-    public function addRole(Request $request){
-        if (self::GDT('role')){
-            return response('',403);
+    public function addRole(Request $request)
+    {
+        if (self::GDT('role')) {
+            return response('', 403);
         }
-        $this->validate($request,[
+        $this->validate($request, [
             "name" => "required|unique:admin_roles",
             "slug" => "required|unique:admin_roles",
-        ],[
+        ], [
             "name.required" => "角色不能为空",
             "name.unique" => "角色名已经存在",
             "slug.required" => "角色标识不能为空",
             "slug.unique" => "角色标识已经存在",
         ]);
-        $data = ['name' => $request->name,'slug' => $request->slug];
-        try{
-            $res = Role::create($data);
-            return apiResponse(2001,$res);
-        }catch (\Exception $exception){
-            return apiResponse(2005,[],$exception->getMessage());
+        $data = ['name' => $request->name, 'slug' => $request->slug];
+        try {
+            $res = AdminRole::create($data);
+            return apiResponse(2001, $res);
+        } catch (\Exception $exception) {
+            return apiResponse(2005, [], $exception->getMessage());
         }
     }
 
@@ -99,22 +104,23 @@ class RoleController extends Controller
      * @DATE: 2020/9/24
      * @TIME: 1:13 下午
      */
-    public function updateRole(Request $request){
-        if (self::GDT('role')){
-            return response('',403);
+    public function updateRole(Request $request)
+    {
+        if (self::GDT('role')) {
+            return response('', 403);
         }
-        $this->validate($request,[
+        $this->validate($request, [
             "id" => "required",
             "name" => "required",
             "slug" => "required",
         ]);
-        $data = ['name' => $request->name,'slug' => $request->slug];
-        $temp = Role::find($request->id);
-        try{
+        $data = ['name' => $request->name, 'slug' => $request->slug];
+        $temp = AdminRole::find($request->id);
+        try {
             $temp->update($data);
             return apiResponse(2001);
-        }catch (\Exception $exception){
-            return apiResponse(2005,[],$exception->getMessage());
+        } catch (\Exception $exception) {
+            return apiResponse(2005, [], $exception->getMessage());
         }
     }
 
@@ -136,24 +142,25 @@ class RoleController extends Controller
      * @TIME: 1:17 下午
      * @throws
      */
-    public function delRole(Request $request){
-        if (self::GDT('role')){
-            return response('',403);
-        }
-        $this->validate($request,[
+    public function delRole(Request $request)
+    {
+        $this->validate($request, [
             "id" => "required",
         ]);
-
-        DB::beginTransaction();
-        try{
-            Role::where('id',$request->id)->delete();                   #获取角色
-            RolePermissions::where('role_id',$request->id)->delete();   #获取角色所关联的权限
-            RoleMenu::where('role_id',$request->id)->delete();          #获取角色所关联的菜单
-            DB::commit();
-            return apiResponse(2001);
-        }catch (\Exception $exception){
-            DB::rollBack();
-            return apiResponse(2005,[],$exception->getMessage());
+        try {
+            return DB::transaction(function () use ($request) {
+                try {
+                    AdminRole::where('id', $request->id)->delete();                   #角色表
+                    AdminRoleMenu::where('role_id', $request->id)->delete();          #角色菜单关联表
+                    AdminRoleUser::where('role_id', $request->id)->delete();          #角色用户关联表
+                    AdminRoleWidget::where('role_id', $request->id)->delete();        #角色组件关联表
+                    return apiResponse(2001);
+                } catch (\Exception $exception) {
+                    throw new \Exception($exception->getMessage());
+                }
+            });
+        } catch (\Exception $exception) {
+            return apiResponse(2005, [], $exception->getMessage());
         }
     }
 
@@ -177,18 +184,19 @@ class RoleController extends Controller
      * @TIME: 4:57 下午
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function getRoleDetail(Request $request){
-        $this->validate($request,['id' => 'required']);
-        $role = Role::find($request->id);
-        $res = RolePermissions::LeftJoin('admin_permissions','admin_role_permissions.permission_id','=','admin_permissions.id')
-            ->where('admin_role_permissions.role_id',$request->id)
+    public function getRoleDetail(Request $request)
+    {
+        $this->validate($request, ['id' => 'required']);
+        $role = AdminRole::find($request->id);
+        $res = RolePermissions::LeftJoin('admin_permissions', 'admin_role_permissions.permission_id', '=', 'admin_permissions.id')
+            ->where('admin_role_permissions.role_id', $request->id)
             ->select(
                 'admin_role_permissions.role_id',
                 'admin_role_permissions.permission_id',
                 'admin_permissions.name',
                 'admin_permissions.slug'
             )->get();
-        return apiResponse(2001,['role' => $role,'rp' => $res]);
+        return apiResponse(2001, ['role' => $role, 'rp' => $res]);
     }
 
 }

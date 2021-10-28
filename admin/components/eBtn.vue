@@ -59,27 +59,22 @@ export default {
     }
   },
   computed: {
-    // ...mapGetters({
-    //   inter: "permission/interface",
-    // }),
+    ...mapGetters({
+      widgets: "permission/widgets",
+    }),
     isShow() {
-      return true
-      // if (this.tag && this.inter && this.inter.length) {
-      //   if (this.inter.includes("suppppper")) {
-      //     // 超级管理员
-      //     return true
-      //   }
-      //   if (this.tag instanceof Array) {
-      //     // 列表比对
-      //     return this.checkArray(this.inter, this.tag)
-      //   } else {
-      //     // 单个包含
-      //     return this.inter.includes(this.tag)
-      //   }
-      // } else {
-      //   // 默认显示
-      //   return true
-      // }
+      if (this.tag && this.widgets && this.widgets.length) {
+        if (this.tag instanceof Array) {
+          // 列表比对
+          return this.checkArray(this.widgets, this.tag)
+        } else {
+          // 单个包含
+          return this.widgets.includes(this.tag)
+        }
+      } else {
+        // 默认显示
+        return true
+      }
     }
   },
   data() {
