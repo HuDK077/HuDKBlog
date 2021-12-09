@@ -9,22 +9,25 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 
-class CloseOrder implements ShouldQueue
+class Queue implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    private $data;
+
+    public function tags()
+    {
+        return ['demo'];
+    }
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    protected $data;
-
-    public function __construct($data, $delay)
+    public function __construct($data)
     {
         $this->data = $data;
-        Log::info('延时时长:' . $delay . 's');
-        $this->delay($delay);
     }
 
     /**
@@ -34,6 +37,13 @@ class CloseOrder implements ShouldQueue
      */
     public function handle()
     {
-        Log::info($this->data);
+        try {
+            $this->data['exec_time'] = date('Y-m-d H:i:s');
+//            echo $this->data;
+        } catch (\Exception $exception) {
+            Log::info($exception->getMessage());
+        }
     }
 }
+
+?>

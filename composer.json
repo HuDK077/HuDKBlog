@@ -14,22 +14,23 @@
     ],
     "license": "MIT",
     "require": {
-        "php": "^7.2.5",
+        "php": "^7.4.2",
         "alibabacloud/client": "^1.5",
         "dingo/api": "^3.0",
         "fideloper/proxy": "^4.2",
         "fruitcake/laravel-cors": "^1.0",
         "guzzlehttp/guzzle": "^6.3",
+        "hhxsv5/laravel-s": "^3.7",
         "laravel/framework": "^7.0",
         "laravel/tinker": "^2.0",
         "mix/guzzle": "^2.2",
         "orangehill/iseed": "^2.6",
         "overtrue/laravel-wechat": "^6.0",
         "predis/predis": "^1.1",
-        "tymon/jwt-auth": "^1.0",
-        "zgldh/qiniu-laravel-storage": "^0.10.3",
         "qiniu/php-sdk": "^7.4",
-        "hhxsv5/laravel-s": "^3.7"
+        "tymon/jwt-auth": "^1.0",
+        "vladimir-yuldashev/laravel-queue-rabbitmq": "10.2.0",
+        "zgldh/qiniu-laravel-storage": "^0.10.3"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.8",

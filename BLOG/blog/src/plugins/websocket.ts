@@ -12,7 +12,7 @@ export default class SocketService {
     static connected:any;
     // 记录重试的次数
     static sendRetryCount:number = 0;
-    // 重新连接尝试的次数
+    // 重新连接尝试的次数 die outsider
     static connectRetryCount:number = 0;
     //  定义连接服务器的方法
     static connect() {
@@ -70,11 +70,23 @@ export default class SocketService {
             } catch (e) {
                 console.log(e)
             }
-
         }else{
             console.log('连接未开启')
         }
     }
+    // 重新连接
+    // static reconnect(){
+    //     if(SocketService){
+    //         console.log('已连接')
+    //     }else{
+    //         SocketService.sendRetryCount = 0;
+    //         try {
+    //             SocketService.ws.onclose();
+    //         } catch (e) {
+    //             console.log(e)
+    //         }
+    //     }
+    // }
 }
 
 export {
