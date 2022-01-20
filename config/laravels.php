@@ -5,7 +5,7 @@
  */
 return [
     'listen_ip'                => env('LARAVELS_LISTEN_IP', '127.0.0.1'),
-    'listen_port'              => env('LARAVELS_LISTEN_PORT', 5200),
+    'listen_port'              => env('LARAVELS_LISTEN_PORT', 5500),
     'socket_type'              => defined('SWOOLE_SOCK_TCP') ? SWOOLE_SOCK_TCP : 1,
     'enable_coroutine_runtime' => false,
     'server'                   => env('LARAVELS_SERVER', 'LaravelS'),
@@ -36,10 +36,10 @@ return [
         'enable'        => env('LARAVELS_TIMER', false),
         'jobs'          => [
             // Enable LaravelScheduleJob to run `php artisan schedule:run` every 1 minute, replace Linux Crontab
-            //\Hhxsv5\LaravelS\Illuminate\LaravelScheduleJob::class,
+            \Hhxsv5\LaravelS\Illuminate\LaravelScheduleJob::class,
             // Two ways to configure parameters:
             // [\App\Jobs\XxxCronJob::class, [1000, true]], // Pass in parameters when registering
-            // \App\Jobs\XxxCronJob::class, // Override the corresponding method to return the configuration
+             \App\Jobs\LogQueue::class, // Override the corresponding method to return the configuration
         ],
         'max_wait_time' => 5,
     ],
@@ -59,7 +59,7 @@ return [
             //\App\Http\Controllers\TestController::class,
         ],
     ],
-    'swoole'                   => [
+    'swoole'                 => [
         'daemonize'          => env('LARAVELS_DAEMONIZE', false),
         'dispatch_mode'      => 2,
         'reactor_num'        => env('LARAVELS_REACTOR_NUM', function_exists('swoole_cpu_num') ? swoole_cpu_num() * 2 : 4),

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "72c45adaabb32a666eca615ac6255582",
+    "content-hash": "f9e415dc1a13d75f2eb9c6fed500f51e",
     "packages": [
         {
             "name": "adbario/php-dot-notation",
@@ -7682,6 +7682,59 @@
             "time": "2021-11-22T10:43:59+00:00"
         },
         {
+            "name": "tencentcloud/tencentcloud-sdk-php",
+            "version": "3.0.556",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/TencentCloud/tencentcloud-sdk-php.git",
+                "reference": "191562c7cacfcacb860faccf9ccc67bd79ca313d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/TencentCloud/tencentcloud-sdk-php/zipball/191562c7cacfcacb860faccf9ccc67bd79ca313d",
+                "reference": "191562c7cacfcacb860faccf9ccc67bd79ca313d",
+                "shasum": "",
+                "mirrors": [
+                    {
+                        "url": "https://mirrors.aliyun.com/composer/dists/%package%/%reference%.%type%",
+                        "preferred": true
+                    }
+                ]
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^6.3 || ^7.0",
+                "php": ">=5.6.0"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "src/QcloudApi/QcloudApi.php"
+                ],
+                "psr-4": {
+                    "TencentCloud\\": "./src/TencentCloud"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "coolli",
+                    "email": "tencentcloudapi@tencent.com",
+                    "homepage": "https://cloud.tencent.com/document/sdk/PHP",
+                    "role": "Developer"
+                }
+            ],
+            "description": "TencentCloudApi php sdk",
+            "homepage": "https://github.com/TencentCloud/tencentcloud-sdk-php",
+            "support": {
+                "issues": "https://github.com/TencentCloud/tencentcloud-sdk-php/issues",
+                "source": "https://github.com/TencentCloud/tencentcloud-sdk-php/tree/3.0.556"
+            },
+            "time": "2022-01-11T00:29:19+00:00"
+        },
+        {
             "name": "tijsverkoyen/css-to-inline-styles",
             "version": "2.2.3",
             "source": {
@@ -11774,7 +11827,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "^7.2.5"
+        "php": "^7.4.2"
     },
     "platform-dev": [],
     "platform-overrides": {
