@@ -4,12 +4,14 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Psy\Util\Json;
 use TencentCloud\Sms\V20210111\SmsClient;
 use TencentCloud\Sms\V20210111\Models\SendSmsRequest;
 use TencentCloud\Common\Exception\TencentCloudSDKException;
 use TencentCloud\Common\Credential;
 use TencentCloud\Common\Profile\ClientProfile;
 use TencentCloud\Common\Profile\HttpProfile;
+use function Symfony\Component\Translation\t;
 
 class ApiSmsController extends Controller
 {
@@ -66,9 +68,13 @@ class ApiSmsController extends Controller
         } else {
             $text = '拒绝';
         }
-        $req->TemplateParamSet = array("王梓茹小姐姐", $text);
+        $req->TemplateParamSet = array("", $text);
         $resp = $client->SendSms($req);
-        // 输出json格式的字符串回包
-        print_r($resp->toJsonString());
+        $resArr = json_decode($resp->toJsonString(),true);
+        if($resArr['SendStatusSet']['Code'] == 'Ok'){
+            return apiResponse('200');
+        }else{
+            return apiResponse('500');
+        }
     }
 }
