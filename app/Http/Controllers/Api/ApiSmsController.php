@@ -71,10 +71,10 @@ class ApiSmsController extends Controller
         $req->TemplateParamSet = array("", $text);
         $resp = $client->SendSms($req);
         $resArr = json_decode($resp->toJsonString(),true);
-        if($resArr['SendStatusSet']['Code'] == 'Ok'){
+        if($resArr['SendStatusSet'][0]['Code'] == 'Ok'){
             return apiResponse('200');
         }else{
-            return apiResponse('500');
+            return apiResponse('500',[],$resArr['SendStatusSet'][0]['Message']);
         }
     }
 }
