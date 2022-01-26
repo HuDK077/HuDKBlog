@@ -52,12 +52,12 @@ class ApiSmsController extends Controller
         /* 短信签名内容: 使用 UTF-8 编码，必须填写已审核通过的签名，签名信息可登录 [短信控制台] 查看 */
         $req->SignName = "编程问题记录分享";
         /* 短信码号扩展号: 默认未开通，如需开通请联系 [sms helper] */
-        $req->ExtendCode = "";
+//        $req->ExtendCode = "";
         /* 下发手机号码，采用 E.164 标准，+[国家或地区码][手机号]
          * 示例如：+8613711112222， 其中前面有一个+号 ，86为国家码， ，最多不要超过200个手机号*/
         $req->PhoneNumberSet = array($phone);
         /* 国际/港澳台短信 SenderId: 国内短信填空，默认未开通，如需开通请联系 [sms helper] */
-        $req->SenderId = "";
+//        $req->SenderId = "";
         /* 用户的 session 内容: 可以携带用户侧 ID 等上下文信息，server 会原样返回 */
         $req->SessionContext = $request->choose;
         /* 模板 ID: 必须填写已审核通过的模板 ID。模板ID可登录 [短信控制台] 查看 */
@@ -68,9 +68,10 @@ class ApiSmsController extends Controller
         } else {
             $text = '拒绝';
         }
-        $req->TemplateParamSet = array("", $text);
+        $req->TemplateParamSet = array("王小猫", $text);
         $resp = $client->SendSms($req);
         $resArr = json_decode($resp->toJsonString(),true);
+        return $resp->toJsonString();
         if($resArr['SendStatusSet'][0]['Code'] == 'Ok'){
             return apiResponse('200');
         }else{
