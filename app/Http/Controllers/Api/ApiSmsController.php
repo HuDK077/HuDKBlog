@@ -63,7 +63,7 @@ class ApiSmsController extends Controller
         /* 模板 ID: 必须填写已审核通过的模板 ID。模板ID可登录 [短信控制台] 查看 */
         $req->TemplateId = $this->TEMPLATE_ID;
         /* 模板参数: 若无模板参数，则设置为空*/
-        if ($request->choose) {
+        if ($request->choose == 1) {
             $text = '同意';
         } else {
             $text = '拒绝';
