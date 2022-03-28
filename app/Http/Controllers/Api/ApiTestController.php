@@ -16,9 +16,8 @@ class ApiTestController extends Controller
             $params['id']=rand(1,999999);
             $params['mq']='Queue';
             $params['request_time']=date('Y-m-d H:i:s');
-            $this->dispatch(new Queue($params));
-
-//            $this->dispatch(new LogQueue($params));
+            //$this->dispatch(new Queue($params));
+            $this->dispatch(new LogQueue($params));
             return apiResponse('200',$params['id']);
         } catch (\Exception $e) {
             return apiResponse('500',[],$e->getMessage());
