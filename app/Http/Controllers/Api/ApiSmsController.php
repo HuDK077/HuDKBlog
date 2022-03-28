@@ -23,8 +23,25 @@ class ApiSmsController extends Controller
     private $SECRET_KEY;
 
 
-    // 发送短信(单发)
-    public function sendSms(Request $request)
+    /**
+     * showdoc
+     * @catalog 前台/用户
+     * @title 发送验证码
+     * @description 发送验证码
+     * @method POST
+     * @url http://xx.com/api/auth/sendVerificationCode
+     * @param phone 必选 string 手机号
+     * @param useType 必选 string 发送验证码类型
+     * @return {"error_code": 2001,"data": [],"message": "success"}
+     * @return_param error_code int 返回码
+     * @return_param message string 返回说明
+     * @return_param token string token
+     * @remark 这里是备注信息
+     * @number 99
+     * @DATE: 2022/3/23
+     * @TIME: 11:06 上午
+     */
+    public function sendVerificationCode(Request $request)
     {
         $this->validate($request, [
             'useType' => 'required',
