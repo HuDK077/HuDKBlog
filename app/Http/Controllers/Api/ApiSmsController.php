@@ -81,7 +81,7 @@ class ApiSmsController extends Controller
         $resp = $client->SendSms($req);
         $resArr = json_decode($resp->toJsonString(), true);
         if ($resArr['SendStatusSet'][0]['Code'] == 'Ok') {
-            Redis::set($request->phone, $verificationCode, 300);
+            Redis::setex($request->phone, 300 ,$verificationCode);
             return apiResponse('2001', [], '发送成功');
         } else {
             return apiResponse('2005', [], $resArr['SendStatusSet'][0]['Message']);
