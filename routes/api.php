@@ -11,11 +11,14 @@ $api = app('Dingo\Api\Routing\Router');
 
 $api->version('v1', ['namespace' => 'App\Http\Controllers\Api', 'prefix' => 'api','middleware' => 'api.throttle','limit' => 300,'expires' => 1], function ($route) {
     $route->post('auth/login', 'ApiAuthController@login');              #小程序用户获取token
+    $route->post('auth/register', 'ApiAuthController@register');              #注册
+    $route->post('auth/resetPassword', 'ApiAuthController@resetPassword');              #注册
     $route->post('wechat/login', 'ApiWechatController@login');          #小程序登录
+    $route->post('wechat/register', 'ApiWechatController@register');          #小程序登录
     $route->any('file/getImageFile', 'ApiFileController@getImageFile'); #获取图片接口
     $route->any('file/qiniuNotify', 'ApiFileController@qiniuNotify'); #七牛上传回调
     $route->any('test/my_scandir', 'ApiTestController@my_scandir'); #七牛上传回调
-    $route->any('sms/sendSms', 'ApiSmsController@sendSms'); #七牛上传回调
+    $route->any('sms/sendSms', 'ApiSmsController@sendSms'); # 验证码发送
     #路由自动注入
     $route->any('{controller}/{func}', [
         'middleware' => checkMiddleware('api'),

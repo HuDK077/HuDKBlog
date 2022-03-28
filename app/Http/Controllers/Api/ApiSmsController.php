@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redis;
 use Psy\Util\Json;
 use TencentCloud\Sms\V20210111\SmsClient;
 use TencentCloud\Sms\V20210111\Models\SendSmsRequest;
@@ -21,18 +22,31 @@ class ApiSmsController extends Controller
     private $SECRET_ID;
     private $SECRET_KEY;
 
-    public function __construct()
-    {
-        $this->APP_ID = env('TENCENT_SMS_APPID', 'default');
-        $this->APP_KEY = env('TENCENT_SMS_APP_KEY', 'default');
-        $this->TEMPLATE_ID = env('TENCENT_SMS_TEMPLATE_ID', 'default');
-        $this->SECRET_ID = env('SECRET_ID', 'default');
-        $this->SECRET_KEY = env('SECRET_KEY', 'default');
-    }
 
+    // 发送短信(单发)
     public function sendSms(Request $request)
     {
-        $phone = '+8615152056569';
+        $this->validate($request, [
+            'useType' => 'required',
+            'phone' => 'required|regex:/^1[345789][0-9]{9}$/',
+        ]);
+        $this->APP_ID = env('TENCENT_SMS_APPID', 'default');
+        $this->APP_KEY = env('TENCENT_SMS_APP_KEY', 'default');
+        $this->SECRET_ID = env('SECRET_ID', 'default');
+        $this->SECRET_KEY = env('SECRET_KEY', 'default');
+        switch ($request->useType) {
+            case 'LOGIN':
+                $this->TEMPLATE_ID = env('TENCENT_SMS_LOGIN_TEMPLATE_ID', 'default');
+                break;
+            case 'REGISTER':
+                $this->TEMPLATE_ID = env('TENCENT_SMS_REGISTER_TEMPLATE_ID', 'default');
+                break;
+        }
+        $phone = '+86' . $request->phone;
+        $verificationCode = get_rand_code(6, 1);
+        if (Redis::exists($request->phone)) {
+            return apiResponse('2005', [], '验证码已发送，短时间内不要重复发送');
+        }
         $cred = new Credential($this->SECRET_ID, $this->SECRET_KEY);
         $httpProfile = new HttpProfile();
         $httpProfile->setReqMethod("POST");  // post请求(默认为post请求)
@@ -49,7 +63,7 @@ class ApiSmsController extends Controller
         $req = new SendSmsRequest();
         /* 短信应用ID: 短信SdkAppId在 [短信控制台] 添加应用后生成的实际SdkAppId，示例如1400006666 */
         $req->SmsSdkAppId = $this->APP_ID;
-        /* 短信签名内容: 使用 UTF-8 编码，必须填写已审核通过的签名，签名信息可登录 [短信控制台] 查看 */
+        /* 短信签名内容: 使用 UTF-8 编码，必须xcfv;./    qw3e45r6t7填写已审核通过的签名，签名信息可登录 [短信控制台] 查看 */
         $req->SignName = "编程问题记录分享";
         /* 短信码号扩展号: 默认未开通，如需开通请联系 [sms helper] */
 //        $req->ExtendCode = "";
@@ -63,18 +77,14 @@ class ApiSmsController extends Controller
         /* 模板 ID: 必须填写已审核通过的模板 ID。模板ID可登录 [短信控制台] 查看 */
         $req->TemplateId = $this->TEMPLATE_ID;
         /* 模板参数: 若无模板参数，则设置为空*/
-        if ($request->choose == 1) {
-            $text = '同意';
-        } else {
-            $text = '拒绝';
-        }
-        $req->TemplateParamSet = array("王小猫", $text);
+        $req->TemplateParamSet = array($verificationCode);
         $resp = $client->SendSms($req);
-        $resArr = json_decode($resp->toJsonString(),true);
-        if($resArr['SendStatusSet'][0]['Code'] == 'Ok'){
-            return apiResponse('2001');
-        }else{
-            return apiResponse('2005',[],$resArr['SendStatusSet'][0]['Message']);
+        $resArr = json_decode($resp->toJsonString(), true);
+        if ($resArr['SendStatusSet'][0]['Code'] == 'Ok') {
+            Redis::set($request->phone, $verificationCode, 300);
+            return apiResponse('2001', [], '发送成功');
+        } else {
+            return apiResponse('2005', [], $resArr['SendStatusSet'][0]['Message']);
         }
     }
 }

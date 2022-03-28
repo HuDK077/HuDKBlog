@@ -67,19 +67,6 @@ if (!function_exists('randomCertificateId')) {
     }
 }
 
-if (!function_exists('memberType')){
-    /*
-     * 获取会员类型
-     */
-    function memberType($type){
-        switch ($type){
-            case 1:return '普通用户';
-            case 2:return '设计师';
-            case 3:return '工艺师';
-            default:return $type;
-        }
-    }
-}
 
 if (!function_exists('checkMiddleware')) {
     /**
