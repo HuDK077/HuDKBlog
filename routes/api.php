@@ -17,7 +17,7 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers\Api', 'prefix' => 'api
     $route->post('wechat/register', 'ApiWechatController@register');          #小程序登录
     $route->any('file/getImageFile', 'ApiFileController@getImageFile'); #获取图片接口
     $route->any('file/qiniuNotify', 'ApiFileController@qiniuNotify'); #七牛上传回调
-    $route->any('test/my_scandir', 'ApiTestController@my_scandir'); #七牛上传回调
+    $route->any('test/test', 'ApiTestController@test'); #七牛上传回调
     $route->any('sms/sendVerificationCode', 'ApiSmsController@sendVerificationCode'); # 验证码发送
     #路由自动注入
     $route->any('{controller}/{func}', [
