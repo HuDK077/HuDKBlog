@@ -29,6 +29,7 @@ class ApiTestController extends Controller
                 ->encoding('UTF-8')
                 ->generate($request->text,$filePath);
             $imageFile = file_get_contents($filePath);
+            return $imageFile;
             return response($imageFile, 200)->header('Content-Type', 'image/png');
         } catch (\Exception $e) {
             return apiResponse('500', [], $e->getMessage());
