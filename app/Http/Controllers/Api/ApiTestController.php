@@ -18,19 +18,13 @@ class ApiTestController extends Controller
             'text' => 'required',
         ]);
         try {
-            if (!file_exists(public_path('/uploads/api/qr_codes'))) {
-                mkdir(public_path('/uploads/api/qr_codes'));
-            }
-            $fileName = get_rand_code(12, 3) . time() . '.png';
-            $filePath = public_path('/uploads/api/qr_codes/' . $fileName);
-             QrCode::format('png')
+            $img = QrCode::format('png')
                 ->size(100)
                 ->margin(1)
                 ->encoding('UTF-8')
-                ->generate($request->text,$filePath);
-            $imageFile = file_get_contents($filePath);
-            return $imageFile;
-            return response($imageFile, 200)->header('Content-Type', 'image/png');
+                ->generate($request->text);
+            $data = 'data:image/png;base64,' . base64_encode($img);
+            return apiResponse('200', [], $data);
         } catch (\Exception $e) {
             return apiResponse('500', [], $e->getMessage());
         }
