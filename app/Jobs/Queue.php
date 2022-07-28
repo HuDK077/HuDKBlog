@@ -40,9 +40,8 @@ class Queue implements ShouldQueue
         try {
             $this->data['exec_time'] = date('Y-m-d H:i:s');
             print_r('开始执行---');
-            Log::info($this->data);
         } catch (\Exception $exception) {
-            Log::info($exception->getMessage());
+            print_r($exception->getMessage());
         }
     }
 }

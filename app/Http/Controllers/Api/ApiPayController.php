@@ -19,25 +19,6 @@ class ApiPayController extends Controller
     }
 
 
-    /**
-     * showdoc
-     * @catalog 前台/微信支付
-     * @title 发起支付
-     * @description 发起支付
-     * @method POST
-     * @url http://xx.com/api/pay/pay
-     * @header token 必选 string 设备token
-     * @param openid 必选 string openid
-     * @param orderid 必选 string 订单号
-     * @return {"error_code": 2001,"data": xxxx,"message": "success"}
-     * @return_param error_code int 返回码
-     * @return_param message string 返回说明
-     * @return_param name string 用户名称
-     * @remark 这里是备注信息
-     * @number 99
-     * @DATE: 2020/10/28
-     * @TIME: 4:51 PM
-     */
     public function pay(Request $request)
     {
         $openid = $request->openid;

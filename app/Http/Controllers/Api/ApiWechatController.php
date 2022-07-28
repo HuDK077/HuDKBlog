@@ -14,24 +14,6 @@ class ApiWechatController extends Controller
         $this->app = app('wechat.mini_program');
     }
 
-    /**
-     * showdoc
-     * @catalog 前台/微信
-     * @title 小程序用户登录接口_v1.0
-     * @description 小程序用户登录接口_v1.0
-     * @method POST
-     * @url http://xx.com/api/wechat/login
-     * @header token 必选 string 设备token
-     * @param code 必选 string jscode
-     * @return {"error_code": 2001,"message": "success","openid": "xxx"}
-     * @return_param error_code int 返回码
-     * @return_param message string 返回说明
-     * @return_param openid string 用户openid
-     * @remark 这里是备注信息
-     * @number 99
-     * @DATE: 2020/9/23
-     * @TIME: 11:08 上午
-     */
     public function login(Request $request)
     {
         if (!$request->code) {
@@ -47,25 +29,6 @@ class ApiWechatController extends Controller
     }
 
 
-    /**
-     * showdoc
-     * @catalog 前台/微信
-     * @title 获取微信绑定手机号_v1.0
-     * @description 获取微信绑定手机号_v1.0
-     * @method POST
-     * @url http://xx.com/api/wechat/getPhoneByCode
-     * @header token 必选 string 设备token
-     * @param encryptedData 必选 string encryptedData
-     * @param iv 必选 string iv
-     * @return {"error_code": 2001,"message": "success","data": "xxx"}
-     * @return_param error_code int 返回码
-     * @return_param message string 返回说明
-     * @return_param data array 用户手机号信息
-     * @remark 这里是备注信息
-     * @number 99
-     * @DATE: 2020/9/23
-     * @TIME: 11:18 上午
-     */
     public function getPhoneByCode(Request $request)
     {
         $encryptedData= $request->encryptedData;

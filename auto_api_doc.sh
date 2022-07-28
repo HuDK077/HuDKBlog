@@ -2,14 +2,14 @@
 #
 # 文档说明： https://www.showdoc.com.cn/page/741656402509783
 #
-api_key="4759e7a15731e11c35a6c8e6f846001b1633517023" 			#api_key
-api_token="5b3c3c659c9a2a6359ee8ab30fcf94941153281937" 	#api_token
-db_host="192.168.0.109"
+api_key="94055130e3f0b9814a67d550540bbe1d345842118" 			#api_key
+api_token="0c81b9944914494bceb61fa90e77f3c7510200307" 	#api_token
+db_host="127.0.0.1"
 db_port=3306
 db_user="root"
-db_password="root"
-db_name="taoduwang"
-url="https://showdoc.jobz.xin/server/?s=/api/open/fromComments" #同步到的url。使用www.showdoc.com.cn的不需要修改，使用私有版的请修改
+db_password="rootroot"
+db_name="blog"
+url="https://www.showdoc.com.cn/server/?s=/api/open/fromComments" #同步到的url。使用www.showdoc.com.cn的不需要修改，使用私有版的请修改
 #
 #
 #

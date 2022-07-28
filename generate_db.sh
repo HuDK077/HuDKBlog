@@ -19,7 +19,7 @@ db=${db_name} 					#要同步的数据库名。要同步多个db可以将本脚�
 api_key=${api_key} 			#api_key
 api_token=${api_token} 	#api_token
 cat_name="数据字典" 	#可选。如果想把生成的文档都放在项目的子目录下，则这里填写子目录名。
-url="https://showdoc.jobz.xin/server/?s=/api/open/updateDbItem" #可选。同步到的url。如果是使用www.showdoc.com.cn ，则不需要再改此项。如果是部署私有版版showdoc，请改此项为http://xx.com/server/index.php?s=/api/open/updateDbItem 。其中xx.com为你的部署域名
+url="https://www.showdoc.com.cn/server/?s=/api/open/updateDbItem" #可选。同步到的url。如果是使用www.showdoc.com.cn ，则不需要再改此项。如果是部署私有版版showdoc，请改此项为http://xx.com/server/index.php?s=/api/open/updateDbItem 。其中xx.com为你的部署域名
 #
 #
 #
