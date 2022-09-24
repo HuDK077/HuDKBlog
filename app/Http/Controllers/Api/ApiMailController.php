@@ -10,10 +10,14 @@ class ApiMailController extends Controller
 {
     public function sendEmail(Request $request)
     {
-        $name = '我发的第一份邮件';
-        Mail::send('emails.test',['name' => $name],function($message){
+        if($request->choose==1){
+            $text = '李雅如的选择是："是"，'.date("Y年m月d日 H:i:s") . '这是一个充满幸福而特别时间。';
+        }else{
+            $text = '李雅如的选择是："否"';
+        }
+        Mail::send('emails.test',['name' => $text],function($message){
             $to = '1369783326@qq.com';
-            $message->to($to)->subject('邮件测试');
+            $message->to($to)->subject('李雅如选择邮件');
         });
         return Mail::failures();
     }

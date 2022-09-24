@@ -24,7 +24,7 @@ class ApiTestController extends Controller
                 ->encoding('UTF-8')
                 ->generate($request->text);
             $data = 'data:image/png;base64,' . base64_encode($img);
-            return apiResponse('200', [], $data);
+            return "<img src='$data'>";
         } catch (\Exception $e) {
             return apiResponse('500', [], $e->getMessage());
         }
