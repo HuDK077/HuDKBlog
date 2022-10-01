@@ -11,7 +11,7 @@ class ApiMailController extends Controller
     public function sendEmail(Request $request)
     {
         if($request->choose==1){
-            $text = '李雅如的选择是："是"，'.date("Y年m月d日 H:i:s") . '这是一个充满幸福而特别时间。';
+            $text = '小雅如同意啦"，'.date("Y年m月d日 H:i:s") . '这是一个充满幸福而特别时间。';
         }else{
             $text = '李雅如的选择是："否"';
         }
