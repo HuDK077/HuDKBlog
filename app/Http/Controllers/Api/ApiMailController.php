@@ -17,7 +17,7 @@ class ApiMailController extends Controller
         }
         Mail::send('emails.test',['name' => $text],function($message){
             $to = '1369783326@qq.com';
-            $message->to($to)->subject('李雅如选择邮件');
+            $message->to($to)->subject('雅如小姐姐的选择邮件');
         });
         return Mail::failures();
     }
