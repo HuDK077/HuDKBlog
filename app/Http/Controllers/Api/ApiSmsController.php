@@ -43,7 +43,6 @@ class ApiSmsController extends Controller
      */
     public function sendVerificationCode(Request $request)
     {
-        // 123
         $this->validate($request, [
             'useType' => 'required',
             'phone' => 'required|regex:/^1[345789][0-9]{9}$/',
