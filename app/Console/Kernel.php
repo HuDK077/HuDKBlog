@@ -18,10 +18,6 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         //
-        ModelMakeCommand::class,
-        GrabOrder::class,
-        OverDueCustomOrder::class,
-        OverDueOrder::class
     ];
 
     /**
@@ -33,9 +29,6 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
-         $schedule->command('GrabOrder')->hourly();
-         $schedule->command('OverDueCustomOrder')->everyMinute();
-         $schedule->command('OverDueOrder')->everyMinute();
     }
 
     /**

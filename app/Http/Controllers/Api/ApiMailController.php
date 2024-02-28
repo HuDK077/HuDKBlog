@@ -11,9 +11,9 @@ class ApiMailController extends Controller
     public function sendEmail(Request $request)
     {
         if($request->choose==1){
-            $text = '可爱的小雅如同意啦，'.date("Y年m月d日 H:i:s") . '这是一个充满幸福而特别时间，一定要记住哦！';
+            $text = '可爱的name同意啦，'.date("Y年m月d日 H:i:s") . '这是一个充满幸福而特别时间，一定要记住哦！';
         }else{
-            $text = '李雅如的选择是："否"';
+            $text = 'name的选择是："否"';
         }
         Mail::send('emails.test',['name' => $text],function($message){
             $to = '1369783326@qq.com';

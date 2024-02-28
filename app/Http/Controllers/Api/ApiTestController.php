@@ -3,11 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Jobs\LogQueue;
-use App\Jobs\Queue;
-use App\Models\File;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class ApiTestController extends Controller

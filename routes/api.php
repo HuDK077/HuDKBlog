@@ -20,6 +20,7 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers\Api', 'prefix' => 'api
     $route->any('test/test', 'ApiTestController@test'); #测试
     $route->any('sms/sendVerificationCode', 'ApiSmsController@sendVerificationCode'); # 验证码发送
     $route->any('mail/sendEmail', 'ApiMailController@sendEmail'); # 邮件发送
+    $route->any('rabbitMQ/pushRabbitmq', 'ApiRabbitMQController@pushRabbitmq'); # 测试队列
     #路由自动注入
     $route->any('{controller}/{func}', [
         'middleware' => checkMiddleware('api'),

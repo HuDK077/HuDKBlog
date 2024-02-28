@@ -16,6 +16,7 @@
     "require": {
         "php": "^7.4.2",
         "alibabacloud/client": "^1.5",
+        "alibabacloud/ocr-api-20210707": "^2.0",
         "dingo/api": "^3.0",
         "fideloper/proxy": "^4.2",
         "fruitcake/laravel-cors": "^1.0",
@@ -50,6 +51,9 @@
         "platform": {
             "ext-pcntl": "7.2",
             "ext-posix": "7.2"
+        },
+        "allow-plugins": {
+            "easywechat-composer/easywechat-composer": true
         }
     },
     "extra": {
