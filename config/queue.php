@@ -59,13 +59,13 @@ return [
             'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
         ],
 
-        'redis' => [
-            'driver' => 'redis',
-            'connection' => 'default',
-            'queue' => env('REDIS_QUEUE', 'default'),
-            'retry_after' => 90,
-            'block_for' => null,
-        ],
+//        'redis' => [
+//            'driver' => 'redis',
+//            'connection' => 'default',
+//            'queue' => env('REDIS_QUEUE', 'default'),
+//            'retry_after' => 90,
+//            'block_for' => null,
+//        ],
 
         'rabbitmq' => [
             'driver' => 'rabbitmq',
@@ -115,6 +115,7 @@ return [
     'rabbitmq' => [
         'driver' => 'rabbitmq',
         'queue' => env('RABBITMQ_QUEUE', 'default'),
+        'exchange' => env('RABBITMQ_EXCHANGE', 'default'),
         'connection' => PhpAmqpLib\Connection\AMQPLazyConnection::class,
 
         'hosts' => [

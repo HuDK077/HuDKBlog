@@ -1,4 +1,7 @@
 <?php
+/**
+ * php artisan make:job UpdateProduct
+ */
 
 namespace App\Jobs;
 
@@ -8,13 +11,12 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Log;
 
 class UpdateProduct implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected string $productKey;
+    protected  $productKey;
 
     /**
      * UpdateProduct constructor.
@@ -23,10 +25,9 @@ class UpdateProduct implements ShouldQueue
      */
     public function __construct($data)
     {
-        $this->productKey = "product::info::{$data->id}";
         $config = [
-            'queue' => env('RABBITMQ_QUEUE'),
-            'exchange' => env('RABBITMQ_EXCHANGE'),
+            'queue' => config('queue.rabbitmq.queue'),
+            'exchange' => config('queue.rabbitmq.exchange'),
         ];
         //服务生产者
         RabbitmqService::push($config['queue'], $config['exchange'], 'pus_product', $data);
@@ -38,15 +39,17 @@ class UpdateProduct implements ShouldQueue
      */
     public function handle()
     {
-        RabbitmqService::pop(env('RABBITMQ_QUEUE'), function ($message) {
+        RabbitmqService::pop(config('queue.rabbitmq.queue'),function ($message){
+            print_r('消费者消费消息'.PHP_EOL);
+            print_r(PHP_EOL);
             $key = $this->productKey . ':' . date('Y-m-d H:i:s');
-            $input = serialize(json_decode($message, true));
-            $product = app('redis')->set($key, $input);
-            if ($product) {
-                Log::info("消息消费成功");
+            $input = serialize(json_decode($message,true));
+            $product = app('redis')->set($key,$input);
+            if($product){
+                print_r('消息消费成功');
                 return true;
-            } else {
-                Log::info("消息消费失败");
+            }else{
+                print_r('消息消费失败');
                 return false;
             }
         });
@@ -56,9 +59,8 @@ class UpdateProduct implements ShouldQueue
      * 异常扑获
      * @param \Exception $exception
      */
-    public function failed(\Exception $exception)
-    {
-        Log::info($exception->getMessage());
+    public function failed(\Exception $exception){
+        print_r($exception->getMessage());
     }
 }
 

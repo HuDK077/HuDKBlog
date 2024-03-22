@@ -20,13 +20,7 @@ class RabbitMQService
 {
     private static function getConnect()
     {
-        $config = [
-            'host' => env('RABBITMQ_HOST', '127.0.0.1'),
-            'port' => env('RABBITMQ_PORT', 5672),
-            'user' => env('RABBITMQ_USER', 'hueck'),
-            'password' => env('RABBITMQ_PASSWORD', 'hueck'),
-            'vhost' => env('RABBITMQ_VHOST', 'hueck'),
-        ];
+        $config = config('queue.rabbitmq.hosts')[0] ?? [];
         return new AMQPStreamConnection($config['host'], $config['port'], $config['user'], $config['password'], $config['vhost']);
     }
 
@@ -45,6 +39,8 @@ class RabbitMQService
         $connection = self::getConnect();
         //构建通道（mq的数据存储与获取是通过通道进行数据传输的）
         $channel = $connection->channel();
+        //监听数据,成功
+
         //声明一个队列
         $channel->queue_declare($queue, false, true, false, false);
         //指定交换机，若是路由的名称不匹配不会把数据放入队列中
@@ -67,6 +63,7 @@ class RabbitMQService
         $channel->close();
         //关闭mq资源
         $connection->close();
+        Log::info("生产者结束");
     }
 
     /**
@@ -78,20 +75,26 @@ class RabbitMQService
      */
     public static function pop($queue, $callback)
     {
+        print_r('消费者中心' . PHP_EOL);
         $connection = self::getConnect();
         //构建消息通道
         $channel = $connection->channel();
         //从队列中取出消息，并且消费
         $message = $channel->basic_get($queue);
-        if (!$message) return false;
+        Log::info($message);
+        if (!$message) {
+            Log::info(4444);
+            return false;
+        }
+        Log::info(5555);
         //消息主题返回给回调函数
         $res = $callback($message->body);
         if ($res) {
-            Log::info("ack验证");
+            print_r('ack验证'.PHP_EOL);
             //ack验证，如果消费失败了，从新获取一次数据再次消费
             $channel->basic_ack($message->getDeliveryTag());
         }
-        Log::info("ack消费完成");
+        print_r('ack消费完成'.PHP_EOL);
         $channel->close();
         $connection->close();
         return true;

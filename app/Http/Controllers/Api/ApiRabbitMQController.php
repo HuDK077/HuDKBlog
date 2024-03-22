@@ -9,12 +9,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\UpdateProduct;
-use App\Models\Api\MQ;
-use App\Services\RabbitMQService;
+use App\Models\Api\Product;
 use Illuminate\Http\Request;
-use Log;
-use PhpAmqpLib\Connection\AMQPStreamConnection;
-use PhpAmqpLib\Message\AMQPMessage;
 
 /**
  * rabbitmq 使用
@@ -23,8 +19,9 @@ use PhpAmqpLib\Message\AMQPMessage;
  */
 class ApiRabbitMQController extends Controller
 {
+    protected string $productKey;
 
-    private $productKey;
+
     /**
      * 推送消息到mq中
      * @param Request $request
@@ -37,11 +34,16 @@ class ApiRabbitMQController extends Controller
         ]);
         try {
             $id = $request->input('id');
-            $info = MQ::query()->find($id);
-            UpdateProduct::dispatch($info);
+
+
+            $select = 'id,name,long_name,shop_id,created_at';
+            $info = Product::query()->selectRaw($select)->where('id', $id)->first();
+            $info->job = $info->name . '-' . time();
+            $productJob = new UpdateProduct($info);
+            $this->dispatch($productJob);
             return apiResponse('2001');
         } catch (\Exception $e) {
-            return $this->failed($e->getMessage() . $e->getLine());
+            return apiResponse('2005', $this->failed($e->getMessage() . $e->getLine()));
         }
     }
 }
